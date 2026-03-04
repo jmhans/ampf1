@@ -1,4 +1,4 @@
-import { pgSchema, serial, text, integer, timestamp, boolean, real } from 'drizzle-orm/pg-core';
+import { pgSchema, serial, text, integer, timestamp, boolean, real, unique } from 'drizzle-orm/pg-core';
 
 // Create a custom schema for the F1 fantasy app
 export const ampf1Schema = pgSchema('ampf1');
@@ -83,6 +83,73 @@ export const picks = ampf1Schema.table('picks', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
+// ---------------------------------------------------------------------------
+// Bingo
+// ---------------------------------------------------------------------------
+
+// Master list of events that can appear as bingo squares
+// e.g. "Safety car deployed", "Red flag", "Driver DNF", "Fastest lap awarded"
+export const bingoEvents = ampf1Schema.table('bingo_events', {
+  id: serial('id').primaryKey(),
+  name: text('name').notNull(),               // Short label shown on the card
+  description: text('description'),           // Optional longer description
+  category: text('category'),                 // e.g. 'safety', 'race', 'driver', 'pit'
+  isActive: boolean('is_active').default(true).notNull(), // Can be deactivated without deleting
+  isAchieved: boolean('is_achieved').default(false).notNull(), // Marked true when event has occurred
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+// One bingo card per participant per race (or season if raceId is null)
+export const entryCards = ampf1Schema.table('entry_cards', {
+  id: serial('id').primaryKey(),
+  participantId: integer('participant_id')
+    .notNull()
+    .references(() => participants.id, { onDelete: 'cascade' }),
+  seasonId: integer('season_id')
+    .notNull()
+    .references(() => seasons.id, { onDelete: 'cascade' }),
+  raceId: integer('race_id')
+    .references(() => races.id, { onDelete: 'cascade' }), // null = season-wide card
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+}, (t) => [
+  unique().on(t.participantId, t.seasonId, t.raceId), // one card per participant per race
+]);
+
+// The individual squares on a bingo card (typically 25 for a 5x5 grid)
+// position 1-25 maps to the grid left-to-right, top-to-bottom; position 13 = free space
+export const entryCardSquares = ampf1Schema.table('entry_card_squares', {
+  id: serial('id').primaryKey(),
+  entryCardId: integer('entry_card_id')
+    .notNull()
+    .references(() => entryCards.id, { onDelete: 'cascade' }),
+  bingoEventId: integer('bingo_event_id')
+    .references(() => bingoEvents.id, { onDelete: 'set null' }), // null = free space
+  position: integer('position').notNull(),    // 1–25
+  isFreeSpace: boolean('is_free_space').default(false).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+}, (t) => [
+  unique().on(t.entryCardId, t.position),     // one event per position per card
+]);
+
+// Admin marks an event as having occurred in a specific race
+// This is what "calls" a square across all cards that contain it
+export const eventOccurrences = ampf1Schema.table('event_occurrences', {
+  id: serial('id').primaryKey(),
+  bingoEventId: integer('bingo_event_id')
+    .notNull()
+    .references(() => bingoEvents.id, { onDelete: 'cascade' }),
+  raceId: integer('race_id')
+    .notNull()
+    .references(() => races.id, { onDelete: 'cascade' }),
+  notes: text('notes'),                       // Optional admin note (e.g. "Lap 34, Verstappen")
+  occurredAt: timestamp('occurred_at').defaultNow().notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+}, (t) => [
+  unique().on(t.bingoEventId, t.raceId),      // an event can only be called once per race
+]);
+
+// ---------------------------------------------------------------------------
 // System settings for app-level metadata
 export const systemSettings = ampf1Schema.table('system_settings', {
   id: serial('id').primaryKey(),

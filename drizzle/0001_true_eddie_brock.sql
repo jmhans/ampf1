@@ -1,0 +1,1 @@
+ALTER TABLE "ampf1"."bingo_events" ADD COLUMN "is_achieved" boolean DEFAULT false NOT NULL;
