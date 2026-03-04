@@ -44,7 +44,7 @@ export default function UserDisplay() {
                   {user.email}
                 </div>
                 <Link
-                  href="/api/auth/logout"
+                  href="/auth/logout"
                   className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                   onClick={() => setUserMenuOpen(false)}
                 >
@@ -60,7 +60,7 @@ export default function UserDisplay() {
 
   return (
     <Link
-      href="/api/auth/login"
+      href="/auth/login"
       className="flex items-center rounded-lg bg-red-700 hover:bg-red-800 px-3 py-2 text-sm text-white transition-colors"
     >
       Sign In

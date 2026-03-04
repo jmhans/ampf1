@@ -1,11 +1,4 @@
-import { auth0 } from '@/app/lib/auth0';
-
-export async function GET(request: Request) {
-  return auth0.middleware(request);
-}
-
-export async function POST(request: Request) {
-  return auth0.middleware(request);
-}
-
-export const dynamic = 'force-dynamic';
+// Auth0 v4 + Next.js 16: auth routes are handled by proxy.ts at the project root.
+// The SDK mounts routes at /auth/login, /auth/logout, /auth/callback, etc.
+// This file is not needed and can be deleted.
+export {};
