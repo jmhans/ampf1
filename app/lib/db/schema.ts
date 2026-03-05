@@ -29,6 +29,7 @@ export const drivers = ampf1Schema.table('drivers', {
   team: text('team').notNull(),
   number: integer('number'),
   nationality: text('nationality'),
+  imageUrl: text('image_url'),        // URL to driver photo
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });

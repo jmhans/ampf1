@@ -7,7 +7,6 @@ import { drizzle } from 'drizzle-orm/neon-http';
 import { neon } from '@neondatabase/serverless';
 import { pgSchema, serial, integer, text, timestamp, boolean } from 'drizzle-orm/pg-core';
 import { eq } from 'drizzle-orm';
-import { sql } from 'drizzle-orm';
 
 const url = process.env.POSTGRES_URL_DEV ?? process.env.POSTGRES_URL;
 if (!url) throw new Error('No POSTGRES_URL_DEV or POSTGRES_URL set');

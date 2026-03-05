@@ -1,0 +1,1 @@
+ALTER TABLE "ampf1"."drivers" ADD COLUMN "image_url" text;
