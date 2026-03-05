@@ -1,7 +1,7 @@
-import Image from 'next/image';
 import { db } from '@/app/lib/db';
 import { drivers } from '@/app/lib/db/schema';
 import { asc } from 'drizzle-orm';
+import DriverCard from './DriverCard';
 
 export const dynamic = 'force-dynamic';
 
@@ -58,40 +58,7 @@ export default async function DriversPage() {
               {/* Drivers grid */}
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 rounded-b-lg border border-t-0 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6">
                 {teamDrivers.map((driver) => (
-                  <div
-                    key={driver.id}
-                    className="flex flex-col items-center text-center rounded-lg border border-gray-200 dark:border-gray-700 p-4 hover:shadow-lg dark:hover:shadow-gray-900/50 transition-shadow"
-                  >
-                    {/* Driver photo */}
-                    <div className="relative w-32 h-40 mb-4 overflow-hidden rounded-md bg-gray-100 dark:bg-gray-700 flex-shrink-0">
-                      {driver.imageUrl ? (
-                        <Image
-                          src={driver.imageUrl}
-                          alt={driver.name}
-                          fill
-                          className="object-cover"
-                          onError={(e) => {
-                            const img = e.target as HTMLImageElement;
-                            img.style.display = 'none';
-                          }}
-                        />
-                      ) : null}
-                      {!driver.imageUrl && (
-                        <div className="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-500">
-                          No photo
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Driver info */}
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">{driver.name}</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">{driver.nationality}</p>
-
-                    {/* Car number */}
-                    <div className="inline-block rounded-full bg-red-600 dark:bg-red-700 text-white font-bold text-lg w-10 h-10 flex items-center justify-center">
-                      {driver.number}
-                    </div>
-                  </div>
+                  <DriverCard key={driver.id} driver={driver} />
                 ))}
               </div>
             </div>
