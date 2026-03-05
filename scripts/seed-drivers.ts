@@ -26,9 +26,9 @@ const drivers = ampf1Schema.table('drivers', {
 });
 
 // 2026 F1 Grid - hypothetical for this scenario
-// Using ui-avatars.com which generates reliable avatar images from names
+// Using dicebear avataaars which generates colorful avatar illustrations
 const getAvatarUrl = (name: string) => 
-  `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&bold=true&size=256`;
+  `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(name)}&scale=80`;
 
 const DRIVERS_2026 = [
   // Ferrari

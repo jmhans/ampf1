@@ -13,6 +13,7 @@ export default function DriverCard({ driver }: { driver: any }) {
             alt={driver.name}
             fill
             className="object-cover"
+            unoptimized
           />
         )}
       </div>
