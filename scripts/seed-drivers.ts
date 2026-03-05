@@ -65,7 +65,7 @@ const DRIVERS_2026 = [
 
   // Mercedes
   { name: 'George Russell', team: 'Mercedes', number: 63, nationality: 'British', imageUrl: getDriverImageUrl('mercedes', 'georus01') },
-  { name: 'Kimi Antonelli', team: 'Mercedes', number: 12, nationality: 'Italian', imageUrl: getDriverImageUrl('mercedes', 'kimant01') },
+  { name: 'Kimi Antonelli', team: 'Mercedes', number: 12, nationality: 'Italian', imageUrl: getDriverImageUrl('mercedes', 'andant01') },
 
   // Red Bull Racing
   { name: 'Max Verstappen', team: 'Red Bull Racing', number: 1, nationality: 'Dutch', imageUrl: getDriverImageUrl('redbullracing', 'maxver01') },
