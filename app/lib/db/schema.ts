@@ -45,6 +45,7 @@ export const races = ampf1Schema.table('races', {
   circuit: text('circuit'),           // e.g. "Bahrain International Circuit"
   country: text('country'),
   raceDate: timestamp('race_date'),
+  raceStartTime: timestamp('race_start_time'), // Race start time stored as UTC
   status: text('status'),             // 'scheduled' | 'in_progress' | 'completed'
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
