@@ -39,3 +39,16 @@ export async function joinPool(formData: FormData, auth0Id: string, email: strin
 
   revalidatePath('/participants');
 }
+
+export async function updateParticipantName(participantId: number, newName: string) {
+  const trimmed = newName.trim();
+  if (!trimmed) throw new Error('Name cannot be empty');
+
+  await db
+    .update(participants)
+    .set({ name: trimmed })
+    .where(eq(participants.id, participantId));
+
+  revalidatePath(`/participants/${participantId}`);
+  revalidatePath('/participants');
+}

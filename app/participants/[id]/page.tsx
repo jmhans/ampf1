@@ -4,6 +4,7 @@ import { db } from '@/app/lib/db';
 import { participants, bingoEvents } from '@/app/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import BingoCard, { type CardSquare } from './BingoCard';
+import ParticipantNameEditor from './ParticipantNameEditor';
 
 export const dynamic = 'force-dynamic';
 
@@ -63,8 +64,9 @@ export default async function ParticipantCardPage({
         >
           ←
         </Link>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Bingo Card</h2>
-        <span className="text-sm text-gray-400">(mock events — swap for real data later)</span>
+        <div className="flex-1">
+          <ParticipantNameEditor participantId={participant.id} initialName={participant.name} />
+        </div>
       </div>
 
       <BingoCard squares={squares} participantName={participant.name} />
