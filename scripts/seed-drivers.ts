@@ -40,7 +40,7 @@ const DRIVERS_2026 = [
   { name: 'Lance Stroll', team: 'Aston Martin', number: 18, nationality: 'Canadian', imageUrl: getDriverImageUrl('astonmartin', 'lanstr01') },
 
   // Williams
-  { name: 'Carlos Sainz', team: 'Williams', number: 55, nationality: 'Spanish', imageUrl: getDriverImageUrl('williams', 'carlsa01') },
+  { name: 'Carlos Sainz', team: 'Williams', number: 55, nationality: 'Spanish', imageUrl: getDriverImageUrl('williams', 'carsai01') },
   { name: 'Alexander Albon', team: 'Williams', number: 23, nationality: 'Thai-British', imageUrl: getDriverImageUrl('williams', 'alealb01') },
 
   // Audi
