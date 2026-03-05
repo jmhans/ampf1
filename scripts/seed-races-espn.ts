@@ -7,6 +7,7 @@ import { drizzle } from 'drizzle-orm/neon-http';
 import { neon } from '@neondatabase/serverless';
 import { pgSchema, serial, integer, text, timestamp, boolean } from 'drizzle-orm/pg-core';
 import { eq } from 'drizzle-orm';
+import { sql } from 'drizzle-orm';
 
 const url = process.env.POSTGRES_URL_DEV ?? process.env.POSTGRES_URL;
 if (!url) throw new Error('No POSTGRES_URL_DEV or POSTGRES_URL set');
@@ -58,10 +59,17 @@ async function main() {
   const events: ESPNEvent[] = data.events || [];
   console.log(`Found ${events.length} events`);
 
-  // Filter for 2026 races (exclude practice, qualifiers, older years)
+  // Filter for 2026 races (only "Grand Prix" events, exclude practice/qualifying/sprint)
   const races2026 = events.filter((e) => {
     const eventDate = new Date(e.date);
-    return eventDate.getFullYear() === 2026 && e.name && !e.name.includes('Practice');
+    return (
+      eventDate.getFullYear() === 2026 &&
+      e.name &&
+      e.name.includes('Grand Prix') &&
+      !e.name.includes('Qualifying') &&
+      !e.name.includes('Sprint') &&
+      !e.name.includes('Practice')
+    );
   });
 
   console.log(`Filtered to ${races2026.length} 2026 race events`);
@@ -84,62 +92,80 @@ async function main() {
 
   console.log(`Using season ID: ${seasonId}`);
 
+  // Clear existing races for this season
+  await db.delete(races).where(eq(races.seasonId, seasonId));
+
   // Parse races, extract round number from name or order
-  const parsedRaces = races2026.map((event, index) => {
-    const eventDate = new Date(event.date);
-    
-    // Try to extract round from event name (e.g., "Round 1 - ...")
-    const roundMatch = event.name.match(/Round\s+(\d+)/i);
-    const round = roundMatch ? parseInt(roundMatch[1], 10) : index + 1;
+  const seenCircuits = new Set<string>();
+  const parsedRaces = races2026
+    .map((event, index) => {
+      const eventDate = new Date(event.date);
+      
+      // Try to extract round from event name (e.g., "Round 1 - ...")
+      const roundMatch = event.name.match(/Round\s+(\d+)/i);
+      const round = roundMatch ? parseInt(roundMatch[1], 10) : index + 1;
 
-    // Clean up name (remove "QualifyingRound", "Sprint" etc, keep "Grand Prix")
-    const cleanName = event.name
-      .replace(/\s+Qualifying Round.*$/i, '')
-      .replace(/\s+Sprint Qualifying.*$/i, '')
-      .trim();
+      // Clean up name (remove "QualifyingRound", "Sprint" etc, keep "Grand Prix")
+      const cleanName = event.name
+        .replace(/\s+Qualifying Round.*$/i, '')
+        .replace(/\s+Sprint Qualifying.*$/i, '')
+        .trim();
 
-    // Extract location
-    const country = event.location?.country || '';
-    const city = event.location?.city || '';
-    
-    // Try to infer circuit from name
-    let circuit = '';
-    if (cleanName.includes('Bahrain')) circuit = 'Bahrain International Circuit';
-    else if (cleanName.includes('Saudi')) circuit = 'Jeddah Corniche Circuit';
-    else if (cleanName.includes('Australia')) circuit = 'Albert Park Circuit';
-    else if (cleanName.includes('Japan')) circuit = 'Suzuka Circuit';
-    else if (cleanName.includes('China')) circuit = 'Shanghai International Circuit';
-    else if (cleanName.includes('Miami')) circuit = 'Miami International Autodrome';
-    else if (cleanName.includes('Monaco')) circuit = 'Circuit de Monaco';
-    else if (cleanName.includes('Spanish')) circuit = 'Circuit de Barcelona-Catalunya';
-    else if (cleanName.includes('Austrian')) circuit = 'Red Bull Ring';
-    else if (cleanName.includes('British')) circuit = 'Silverstone Circuit';
-    else if (cleanName.includes('Hungarian')) circuit = 'Hungaroring';
-    else if (cleanName.includes('Belgian')) circuit = 'Circuit de Spa-Francorchamps';
-    else if (cleanName.includes('Dutch')) circuit = 'Circuit Zandvoort';
-    else if (cleanName.includes('Italian')) circuit = 'Autodromo Nazionale di Monza';
-    else if (cleanName.includes('Azerbaijan')) circuit = 'Baku City Circuit';
-    else if (cleanName.includes('Singapore')) circuit = 'Marina Bay Street Circuit';
-    else if (cleanName.includes('Mexico')) circuit = 'Autódromo Hermanos Rodríguez';
-    else if (cleanName.includes('Brazilian')) circuit = 'Autódromo José Carlos Pace';
-    else if (cleanName.includes('Las Vegas')) circuit = 'Las Vegas Street Circuit';
-    else if (cleanName.includes('Abu Dhabi')) circuit = 'Yas Marina Circuit';
+      // Extract location
+      const country = event.location?.country || '';
+      const city = event.location?.city || '';
+      
+      // Try to infer circuit from name
+      let circuit = '';
+      if (cleanName.includes('Bahrain')) circuit = 'Bahrain International Circuit';
+      else if (cleanName.includes('Saudi')) circuit = 'Jeddah Corniche Circuit';
+      else if (cleanName.includes('Australia')) circuit = 'Albert Park Circuit';
+      else if (cleanName.includes('Japan')) circuit = 'Suzuka Circuit';
+      else if (cleanName.includes('China')) circuit = 'Shanghai International Circuit';
+      else if (cleanName.includes('Miami')) circuit = 'Miami International Autodrome';
+      else if (cleanName.includes('Monaco')) circuit = 'Circuit de Monaco';
+      else if (cleanName.includes('Spanish')) circuit = 'Circuit de Barcelona-Catalunya';
+      else if (cleanName.includes('Austrian')) circuit = 'Red Bull Ring';
+      else if (cleanName.includes('British')) circuit = 'Silverstone Circuit';
+      else if (cleanName.includes('Hungarian')) circuit = 'Hungaroring';
+      else if (cleanName.includes('Belgian')) circuit = 'Circuit de Spa-Francorchamps';
+      else if (cleanName.includes('Dutch')) circuit = 'Circuit Zandvoort';
+      else if (cleanName.includes('Italian')) circuit = 'Autodromo Nazionale di Monza';
+      else if (cleanName.includes('Azerbaijan')) circuit = 'Baku City Circuit';
+      else if (cleanName.includes('Singapore')) circuit = 'Marina Bay Street Circuit';
+      else if (cleanName.includes('Mexico')) circuit = 'Autódromo Hermanos Rodríguez';
+      else if (cleanName.includes('Brazilian')) circuit = 'Autódromo José Carlos Pace';
+      else if (cleanName.includes('Las Vegas')) circuit = 'Las Vegas Street Circuit';
+      else if (cleanName.includes('Abu Dhabi')) circuit = 'Yas Marina Circuit';
 
-    return {
-      seasonId,
-      round,
-      name: cleanName,
-      circuit,
-      country,
-      raceDate: eventDate,
-      status: eventDate < new Date() ? 'completed' : 'scheduled',
-    };
-  });
+      return {
+        circuit,
+        roundMatch,
+        seasonId,
+        round,
+        name: cleanName,
+        country,
+        raceDate: eventDate,
+        status: eventDate < new Date() ? 'completed' : 'scheduled',
+      };
+    })
+    .filter((r) => {
+      // Deduplicate: only keep first instance of each circuit
+      if (seenCircuits.has(r.circuit)) return false;
+      seenCircuits.add(r.circuit);
+      return true;
+    });
 
   console.log(`Inserting ${parsedRaces.length} races...`);
   console.log('Sample race:', parsedRaces[0]);
 
-  await db.insert(races).values(parsedRaces);
+  // Remove extra fields before inserting
+  const racesToInsert = parsedRaces.map(({ circuit, roundMatch, ...rest }) => ({
+    ...rest,
+    circuit,
+  }));
+
+  await db.insert(races).values(racesToInsert);
   console.log('✓ Done!');
 }
 
