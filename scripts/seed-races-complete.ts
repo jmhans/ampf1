@@ -1,6 +1,7 @@
 /**
  * Seed complete 2026 F1 calendar
  * Run with: npx tsx scripts/seed-races-complete.ts
+ * For production: POSTGRES_URL=<prod-url> npx tsx scripts/seed-races-complete.ts
  */
 import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/neon-http';
@@ -8,8 +9,9 @@ import { neon } from '@neondatabase/serverless';
 import { pgSchema, serial, integer, text, timestamp, boolean } from 'drizzle-orm/pg-core';
 import { eq } from 'drizzle-orm';
 
-const url = process.env.POSTGRES_URL_DEV ?? process.env.POSTGRES_URL;
-if (!url) throw new Error('No POSTGRES_URL_DEV or POSTGRES_URL set');
+// Use environment variable first (for production), fall back to .env.local
+const url = process.env.POSTGRES_URL || process.env.POSTGRES_URL_DEV;
+if (!url) throw new Error('No POSTGRES_URL or POSTGRES_URL_DEV set');
 
 const sql = neon(url);
 const db = drizzle(sql);

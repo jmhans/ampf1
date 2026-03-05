@@ -1,14 +1,16 @@
 /**
  * Seed 2026 F1 drivers
  * Run with: npx tsx scripts/seed-drivers.ts
+ * For production: POSTGRES_URL=<prod-url> npx tsx scripts/seed-drivers.ts
  */
 import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/neon-http';
 import { neon } from '@neondatabase/serverless';
 import { pgSchema, serial, integer, text, timestamp } from 'drizzle-orm/pg-core';
 
-const url = process.env.POSTGRES_URL_DEV ?? process.env.POSTGRES_URL;
-if (!url) throw new Error('No POSTGRES_URL_DEV or POSTGRES_URL set');
+// Use environment variable first (for production), fall back to .env.local
+const url = process.env.POSTGRES_URL || process.env.POSTGRES_URL_DEV;
+if (!url) throw new Error('No POSTGRES_URL or POSTGRES_URL_DEV set');
 
 const sql = neon(url);
 const db = drizzle(sql);
@@ -76,10 +78,12 @@ async function main() {
   console.log('Seeding 2026 F1 drivers...');
 
   // Clear existing drivers
-  await db.delete(drivers);
+  console.log('Clearing existing drivers...');
+  const deleteResult = await db.delete(drivers);
+  console.log('Delete completed');
 
   console.log(`Inserting ${DRIVERS_2026.length} drivers...`);
-  await db.insert(drivers).values(
+  const insertResult = await db.insert(drivers).values(
     DRIVERS_2026.map((d) => ({
       name: d.name,
       team: d.team,
@@ -88,8 +92,11 @@ async function main() {
       imageUrl: d.imageUrl,
     }))
   );
+  console.log('Insert completed');
 
-  console.log('✓ Done!');
+  // Verify insertion
+  const count = await db.select().from(drivers);
+  console.log(`✓ Done! Verified ${count.length} drivers in database`);
 }
 
 main().catch((err) => {
