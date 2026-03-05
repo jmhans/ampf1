@@ -26,9 +26,9 @@ const drivers = ampf1Schema.table('drivers', {
 });
 
 // 2026 F1 Grid - hypothetical for this scenario
-// Using official F1 Cloudinary images with face-focused crop
+// Using official F1 Cloudinary images with balanced head/shoulder crop
 const getDriverImageUrl = (teamFolder: string, driverCode: string) =>
-  `https://media.formula1.com/image/upload/c_crop,g_faces,w_256,h_320/q_auto/d_common:f1:2026:fallback:driver:2026fallbackdriverright.webp/v1740000000/common/f1/2026/${teamFolder}/${driverCode}/2026${teamFolder}${driverCode}right.webp`;
+  `https://media.formula1.com/image/upload/c_crop,g_faces,w_512,h_640/q_auto/d_common:f1:2026:fallback:driver:2026fallbackdriverright.webp/v1740000000/common/f1/2026/${teamFolder}/${driverCode}/2026${teamFolder}${driverCode}right.webp`;
 
 const DRIVERS_2026 = [
   // Ferrari
