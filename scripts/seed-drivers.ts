@@ -32,7 +32,7 @@ const getDriverImageUrl = (teamFolder: string, driverCode: string) =>
 
 const DRIVERS_2026 = [
   // Alpine
-  { name: 'Pierre Gasly', team: 'Alpine', number: 10, nationality: 'French', imageUrl: getDriverImageUrl('alpine', 'piergaa01') },
+  { name: 'Pierre Gasly', team: 'Alpine', number: 10, nationality: 'French', imageUrl: getDriverImageUrl('alpine', 'piegas01') },
   { name: 'Franco Colapinto', team: 'Alpine', number: 43, nationality: 'Argentine', imageUrl: getDriverImageUrl('alpine', 'fracol01') },
 
   // Aston Martin
@@ -52,7 +52,7 @@ const DRIVERS_2026 = [
   { name: 'Valtteri Bottas', team: 'Cadillac', number: 77, nationality: 'Finnish', imageUrl: getDriverImageUrl('cadillac', 'valbot01') },
 
   // Ferrari
-  { name: 'Charles Leclerc', team: 'Ferrari', number: 16, nationality: 'Monégasque', imageUrl: getDriverImageUrl('ferrari', 'charlec01') },
+  { name: 'Charles Leclerc', team: 'Ferrari', number: 16, nationality: 'Monégasque', imageUrl: getDriverImageUrl('ferrari', 'chalec01') },
   { name: 'Lewis Hamilton', team: 'Ferrari', number: 44, nationality: 'British', imageUrl: getDriverImageUrl('ferrari', 'lewham01') },
 
   // Haas F1 Team
