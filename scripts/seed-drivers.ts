@@ -57,7 +57,7 @@ const DRIVERS_2026 = [
 
   // Haas F1 Team
   { name: 'Esteban Ocon', team: 'Haas F1 Team', number: 31, nationality: 'French', imageUrl: getDriverImageUrl('haasf1team', 'estoco01') },
-  { name: 'Oliver Bearman', team: 'Haas F1 Team', number: 87, nationality: 'British', imageUrl: getDriverImageUrl('haasf1team', 'olivbe01') },
+  { name: 'Oliver Bearman', team: 'Haas F1 Team', number: 87, nationality: 'British', imageUrl: getDriverImageUrl('haasf1team', 'olibea01') },
 
   // McLaren
   { name: 'Lando Norris', team: 'McLaren', number: 4, nationality: 'British', imageUrl: getDriverImageUrl('mclaren', 'lannor01') },
