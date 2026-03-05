@@ -26,46 +26,50 @@ const drivers = ampf1Schema.table('drivers', {
 });
 
 // 2026 F1 Grid - hypothetical for this scenario
+// Using ui-avatars.com which generates reliable avatar images from names
+const getAvatarUrl = (name: string) => 
+  `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&bold=true&size=256`;
+
 const DRIVERS_2026 = [
   // Ferrari
-  { name: 'Charles Leclerc', team: 'Ferrari', number: 16, nationality: 'Monégasque', imageUrl: 'https://media.formula1.com/content/dam/fomMain/2024/Drivers/LEC.jpg' },
-  { name: 'Lewis Hamilton', team: 'Ferrari', number: 44, nationality: 'British', imageUrl: 'https://media.formula1.com/content/dam/fomMain/2024/Drivers/HAM.jpg' },
+  { name: 'Charles Leclerc', team: 'Ferrari', number: 16, nationality: 'Monégasque', imageUrl: getAvatarUrl('Charles Leclerc') },
+  { name: 'Lewis Hamilton', team: 'Ferrari', number: 44, nationality: 'British', imageUrl: getAvatarUrl('Lewis Hamilton') },
 
   // Red Bull Racing
-  { name: 'Max Verstappen', team: 'Red Bull Racing', number: 1, nationality: 'Dutch', imageUrl: 'https://media.formula1.com/content/dam/fomMain/2024/Drivers/VER.jpg' },
-  { name: 'Pérez', team: 'Red Bull Racing', number: 11, nationality: 'Mexican', imageUrl: 'https://media.formula1.com/content/dam/fomMain/2024/Drivers/PER.jpg' },
+  { name: 'Max Verstappen', team: 'Red Bull Racing', number: 1, nationality: 'Dutch', imageUrl: getAvatarUrl('Max Verstappen') },
+  { name: 'Pérez', team: 'Red Bull Racing', number: 11, nationality: 'Mexican', imageUrl: getAvatarUrl('Sergio Perez') },
 
   // Mercedes
-  { name: 'George Russell', team: 'Mercedes', number: 63, nationality: 'British', imageUrl: 'https://media.formula1.com/content/dam/fomMain/2024/Drivers/RUS.jpg' },
-  { name: 'Andrea Kimi Antonelli', team: 'Mercedes', number: 12, nationality: 'Italian', imageUrl: 'https://media.formula1.com/content/dam/fomMain/2024/Drivers/ANT.jpg' },
+  { name: 'George Russell', team: 'Mercedes', number: 63, nationality: 'British', imageUrl: getAvatarUrl('George Russell') },
+  { name: 'Andrea Kimi Antonelli', team: 'Mercedes', number: 12, nationality: 'Italian', imageUrl: getAvatarUrl('Andrea Antonelli') },
 
   // McLaren
-  { name: 'Lando Norris', team: 'McLaren', number: 4, nationality: 'British', imageUrl: 'https://media.formula1.com/content/dam/fomMain/2024/Drivers/NOR.jpg' },
-  { name: 'Oscar Piastri', team: 'McLaren', number: 81, nationality: 'Australian', imageUrl: 'https://media.formula1.com/content/dam/fomMain/2024/Drivers/PIA.jpg' },
+  { name: 'Lando Norris', team: 'McLaren', number: 4, nationality: 'British', imageUrl: getAvatarUrl('Lando Norris') },
+  { name: 'Oscar Piastri', team: 'McLaren', number: 81, nationality: 'Australian', imageUrl: getAvatarUrl('Oscar Piastri') },
 
   // Aston Martin
-  { name: 'Fernando Alonso', team: 'Aston Martin', number: 14, nationality: 'Spanish', imageUrl: 'https://media.formula1.com/content/dam/fomMain/2024/Drivers/ALO.jpg' },
-  { name: 'Lance Stroll', team: 'Aston Martin', number: 18, nationality: 'Canadian', imageUrl: 'https://media.formula1.com/content/dam/fomMain/2024/Drivers/STR.jpg' },
+  { name: 'Fernando Alonso', team: 'Aston Martin', number: 14, nationality: 'Spanish', imageUrl: getAvatarUrl('Fernando Alonso') },
+  { name: 'Lance Stroll', team: 'Aston Martin', number: 18, nationality: 'Canadian', imageUrl: getAvatarUrl('Lance Stroll') },
 
   // Alpine
-  { name: 'Esteban Ocon', team: 'Alpine', number: 31, nationality: 'French', imageUrl: 'https://media.formula1.com/content/dam/fomMain/2024/Drivers/OCO.jpg' },
-  { name: 'Jack Doohan', team: 'Alpine', number: 34, nationality: 'Australian', imageUrl: 'https://media.formula1.com/content/dam/fomMain/2024/Drivers/DOO.jpg' },
+  { name: 'Esteban Ocon', team: 'Alpine', number: 31, nationality: 'French', imageUrl: getAvatarUrl('Esteban Ocon') },
+  { name: 'Jack Doohan', team: 'Alpine', number: 34, nationality: 'Australian', imageUrl: getAvatarUrl('Jack Doohan') },
 
   // Williams
-  { name: 'Alex Albon', team: 'Williams', number: 23, nationality: 'Thai-British', imageUrl: 'https://media.formula1.com/content/dam/fomMain/2024/Drivers/ALB.jpg' },
-  { name: 'Carlos Sainz', team: 'Williams', number: 55, nationality: 'Spanish', imageUrl: 'https://media.formula1.com/content/dam/fomMain/2024/Drivers/SAI.jpg' },
+  { name: 'Alex Albon', team: 'Williams', number: 23, nationality: 'Thai-British', imageUrl: getAvatarUrl('Alexander Albon') },
+  { name: 'Carlos Sainz', team: 'Williams', number: 55, nationality: 'Spanish', imageUrl: getAvatarUrl('Carlos Sainz') },
 
   // Haas
-  { name: 'Nico Hülkenberg', team: 'Haas', number: 27, nationality: 'German', imageUrl: 'https://media.formula1.com/content/dam/fomMain/2024/Drivers/HUL.jpg' },
-  { name: 'Oliver Bearman', team: 'Haas', number: 87, nationality: 'British', imageUrl: 'https://media.formula1.com/content/dam/fomMain/2024/Drivers/BEA.jpg' },
+  { name: 'Nico Hülkenberg', team: 'Haas', number: 27, nationality: 'German', imageUrl: getAvatarUrl('Nico Hulkenberg') },
+  { name: 'Oliver Bearman', team: 'Haas', number: 87, nationality: 'British', imageUrl: getAvatarUrl('Oliver Bearman') },
 
   // RB
-  { name: 'Yuki Tsunoda', team: 'RB', number: 22, nationality: 'Japanese', imageUrl: 'https://media.formula1.com/content/dam/fomMain/2024/Drivers/TSU.jpg' },
-  { name: 'Isack Hadjar', team: 'RB', number: 32, nationality: 'Swiss', imageUrl: 'https://media.formula1.com/content/dam/fomMain/2024/Drivers/HAD.jpg' },
+  { name: 'Yuki Tsunoda', team: 'RB', number: 22, nationality: 'Japanese', imageUrl: getAvatarUrl('Yuki Tsunoda') },
+  { name: 'Isack Hadjar', team: 'RB', number: 32, nationality: 'Swiss', imageUrl: getAvatarUrl('Isack Hadjar') },
 
   // Kick Sauber
-  { name: 'Guanyu Zhou', team: 'Kick Sauber', number: 24, nationality: 'Chinese', imageUrl: 'https://media.formula1.com/content/dam/fomMain/2024/Drivers/ZHO.jpg' },
-  { name: 'Valteri Bottas', team: 'Kick Sauber', number: 77, nationality: 'Finnish', imageUrl: 'https://media.formula1.com/content/dam/fomMain/2024/Drivers/BOT.jpg' },
+  { name: 'Guanyu Zhou', team: 'Kick Sauber', number: 24, nationality: 'Chinese', imageUrl: getAvatarUrl('Guanyu Zhou') },
+  { name: 'Valteri Bottas', team: 'Kick Sauber', number: 77, nationality: 'Finnish', imageUrl: getAvatarUrl('Valtteri Bottas') },
 ];
 
 async function main() {
