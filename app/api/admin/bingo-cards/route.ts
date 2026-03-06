@@ -3,7 +3,7 @@ import { isAdmin } from '@/app/lib/auth-utils';
 import { redirect } from 'next/navigation';
 import { drizzle } from 'drizzle-orm/neon-http';
 import { neon } from '@neondatabase/serverless';
-import { desc, eq, and, sql, isNull } from 'drizzle-orm';
+import { desc, eq, and, sql, isNull, inArray } from 'drizzle-orm';
 import {
   participants,
   seasons,
@@ -71,7 +71,7 @@ export async function POST(request: Request) {
       targetParticipants = await db
         .select()
         .from(participants)
-        .where(sql`id IN (${participantIds.join(',')})`)
+        .where(inArray(participants.id, participantIds))
     } else {
       targetParticipants = await db.select().from(participants);
     }
