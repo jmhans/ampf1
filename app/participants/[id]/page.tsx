@@ -1,24 +1,12 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { db } from '@/app/lib/db';
-import { participants, bingoEvents } from '@/app/lib/db/schema';
-import { eq } from 'drizzle-orm';
+import { participants, bingoEvents, entryCards, entryCardSquares, seasons } from '@/app/lib/db/schema';
+import { eq, and, isNull, desc } from 'drizzle-orm';
 import BingoCard, { type CardSquare } from './BingoCard';
 import ParticipantNameEditor from './ParticipantNameEditor';
 
 export const dynamic = 'force-dynamic';
-
-// Deterministic seeded shuffle so each participant always gets the same card
-function seededShuffle<T>(arr: T[], seed: number): T[] {
-  const copy = [...arr];
-  let s = seed;
-  for (let i = copy.length - 1; i > 0; i--) {
-    s = (s * 1664525 + 1013904223) & 0xffffffff;
-    const j = Math.abs(s) % (i + 1);
-    [copy[i], copy[j]] = [copy[j], copy[i]];
-  }
-  return copy;
-}
 
 export default async function ParticipantCardPage({
   params,
@@ -29,31 +17,82 @@ export default async function ParticipantCardPage({
   const participantId = parseInt(id, 10);
   if (isNaN(participantId)) notFound();
 
-  const [participantRows, allEvents] = await Promise.all([
+  const [participantRows, activeSeason] = await Promise.all([
     db.select().from(participants).where(eq(participants.id, participantId)).limit(1),
-    db.select().from(bingoEvents).where(eq(bingoEvents.isActive, true)),
+    db.select().from(seasons)
+      .where(eq(seasons.isActive, true))
+      .orderBy(desc(seasons.id))
+      .limit(1),
   ]);
 
   const participant = participantRows[0];
   if (!participant) notFound();
 
-  // Shuffle events deterministically per participant, pick 24 for the card
-  const shuffled = seededShuffle(allEvents, participantId);
-  const picked = shuffled.slice(0, 24);
-
-  // Build 25 squares; position 12 (0-indexed centre) = FREE space
-  const squares: CardSquare[] = [];
-  for (let i = 0; i < 25; i++) {
-    if (i === 12) {
-      squares.push({ id: -1, name: 'FREE', isAchieved: true, isFree: true });
-    } else {
-      const ev = picked[i < 12 ? i : i - 1];
-      squares.push(ev
-        ? { id: ev.id, name: ev.name, isAchieved: ev.isAchieved, isFree: false }
-        : { id: -1, name: '—', isAchieved: false, isFree: false }
-      );
-    }
+  if (!activeSeason || activeSeason.length === 0) {
+    return (
+      <div>
+        <div className="flex items-center gap-3 mb-6">
+          <Link href="/participants" className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100">
+            ←
+          </Link>
+          <ParticipantNameEditor participantId={participant.id} initialName={participant.name} />
+        </div>
+        <p className="text-gray-600">No active season card generated yet.</p>
+      </div>
+    );
   }
+
+  // Fetch the entry card for this participant in the active season
+  const card = await db
+    .select()
+    .from(entryCards)
+    .where(
+      and(
+        eq(entryCards.participantId, participantId),
+        eq(entryCards.seasonId, activeSeason[0].id),
+        isNull(entryCards.raceId)
+      )
+    )
+    .limit(1);
+
+  if (!card || card.length === 0) {
+    return (
+      <div>
+        <div className="flex items-center gap-3 mb-6">
+          <Link href="/participants" className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100">
+            ←
+          </Link>
+          <ParticipantNameEditor participantId={participant.id} initialName={participant.name} />
+        </div>
+        <p className="text-gray-600">No bingo card generated yet. Go to Admin > Generate Cards.</p>
+      </div>
+    );
+  }
+
+  // Fetch all squares for this card
+  const squares_data = await db
+    .select()
+    .from(entryCardSquares)
+    .where(eq(entryCardSquares.entryCardId, card[0].id))
+    .orderBy(entryCardSquares.position);
+
+  // Fetch all events for reference
+  const allEvents = await db.select().from(bingoEvents);
+  const eventMap = new Map(allEvents.map(e => [e.id, e]));
+
+  // Build CardSquare array
+  const squares: CardSquare[] = squares_data.map(sq => {
+    if (sq.isFreeSpace || !sq.bingoEventId) {
+      return { id: -1, name: 'FREE', isAchieved: true, isFree: true };
+    }
+    const event = eventMap.get(sq.bingoEventId);
+    return {
+      id: sq.bingoEventId,
+      name: event?.name || '—',
+      isAchieved: event?.isAchieved || false,
+      isFree: false,
+    };
+  });
 
   return (
     <div>
