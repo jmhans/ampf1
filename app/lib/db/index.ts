@@ -9,12 +9,10 @@ let _db: DrizzleDb | null = null;
 function getDb(): DrizzleDb {
   if (_db) return _db;
 
-  const dbUrl = process.env.NODE_ENV === 'production'
-    ? (process.env.POSTGRES_URL || process.env.AMPF1_POSTGRES_URL)
-    : (process.env.POSTGRES_URL_DEV || process.env.POSTGRES_URL);
+  const dbUrl = process.env.POSTGRES_URL;
 
   if (!dbUrl) {
-    throw new Error('Database URL not found. Set POSTGRES_URL or POSTGRES_URL_DEV in environment variables.');
+    throw new Error('Database URL not found. Set POSTGRES_URL in environment variables.');
   }
 
   const sql = neon(dbUrl);

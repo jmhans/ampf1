@@ -9,9 +9,9 @@ import { neon } from '@neondatabase/serverless';
 import { pgSchema, serial, integer, text, timestamp, boolean } from 'drizzle-orm/pg-core';
 import { eq } from 'drizzle-orm';
 
-// Use environment variable first (for production), fall back to .env.local
-const url = process.env.POSTGRES_URL || process.env.POSTGRES_URL_DEV;
-if (!url) throw new Error('No POSTGRES_URL or POSTGRES_URL_DEV set');
+// Use POSTGRES_URL (configured per environment in .env or Vercel)
+const url = process.env.POSTGRES_URL;
+if (!url) throw new Error('POSTGRES_URL not set');
 
 const sql = neon(url);
 const db = drizzle(sql);

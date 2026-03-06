@@ -41,6 +41,21 @@ export default async function AdminPage() {
             </div>
           </div>
         </Link>
+
+        <Link
+          href="/admin/bingo-cards"
+          className="group rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm transition-all hover:border-blue-500 hover:shadow-md"
+        >
+          <div className="flex items-center gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors text-2xl">
+              🎰
+            </div>
+            <div>
+              <h2 className="font-semibold text-gray-900 dark:text-white">Generate Cards</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Create bingo cards for participants</p>
+            </div>
+          </div>
+        </Link>
       </div>
     </div>
   );
