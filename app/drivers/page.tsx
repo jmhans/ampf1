@@ -28,6 +28,7 @@ export default async function DriversPage() {
     'Alpine': { bg: 'bg-pink-50 dark:bg-pink-900/20', text: 'text-pink-600 dark:text-pink-400' },
     'Williams': { bg: 'bg-sky-50 dark:bg-sky-900/20', text: 'text-sky-600 dark:text-sky-400' },
     'Haas': { bg: 'bg-gray-50 dark:bg-gray-700/20', text: 'text-gray-600 dark:text-gray-400' },
+    'Racing Red Bulls': { bg: 'bg-red-50 dark:bg-red-900/20', text: 'text-red-500 dark:text-red-400' },
     'RB': { bg: 'bg-indigo-50 dark:bg-indigo-900/20', text: 'text-indigo-600 dark:text-indigo-400' },
     'Kick Sauber': { bg: 'bg-yellow-50 dark:bg-yellow-900/20', text: 'text-yellow-600 dark:text-yellow-500' },
   };

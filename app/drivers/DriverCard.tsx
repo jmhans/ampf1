@@ -11,6 +11,7 @@ const TEAM_COLORS: { [key: string]: string } = {
   'Alpine': 'bg-cyan-600',
   'Williams': 'bg-blue-400',
   'Haas': 'bg-gray-700',
+  'Racing Red Bulls': 'bg-red-500',
   'RB': 'bg-indigo-600',
   'Kick Sauber': 'bg-green-900',
 };
