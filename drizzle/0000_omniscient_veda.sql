@@ -1,6 +1,6 @@
 CREATE SCHEMA IF NOT EXISTS "ampf1";
 --> statement-breakpoint
-CREATE TABLE "ampf1"."bingo_events" (
+CREATE TABLE IF NOT EXISTS "ampf1"."bingo_events" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"name" text NOT NULL,
 	"description" text,
@@ -10,7 +10,7 @@ CREATE TABLE "ampf1"."bingo_events" (
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "ampf1"."drivers" (
+CREATE TABLE IF NOT EXISTS "ampf1"."drivers" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"name" text NOT NULL,
 	"team" text NOT NULL,
@@ -20,7 +20,7 @@ CREATE TABLE "ampf1"."drivers" (
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "ampf1"."entry_card_squares" (
+CREATE TABLE IF NOT EXISTS "ampf1"."entry_card_squares" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"entry_card_id" integer NOT NULL,
 	"bingo_event_id" integer,
@@ -30,7 +30,7 @@ CREATE TABLE "ampf1"."entry_card_squares" (
 	CONSTRAINT "entry_card_squares_entry_card_id_position_unique" UNIQUE("entry_card_id","position")
 );
 --> statement-breakpoint
-CREATE TABLE "ampf1"."entry_cards" (
+CREATE TABLE IF NOT EXISTS "ampf1"."entry_cards" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"participant_id" integer NOT NULL,
 	"season_id" integer NOT NULL,
@@ -39,7 +39,7 @@ CREATE TABLE "ampf1"."entry_cards" (
 	CONSTRAINT "entry_cards_participant_id_season_id_race_id_unique" UNIQUE("participant_id","season_id","race_id")
 );
 --> statement-breakpoint
-CREATE TABLE "ampf1"."event_occurrences" (
+CREATE TABLE IF NOT EXISTS "ampf1"."event_occurrences" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"bingo_event_id" integer NOT NULL,
 	"race_id" integer NOT NULL,
@@ -49,7 +49,7 @@ CREATE TABLE "ampf1"."event_occurrences" (
 	CONSTRAINT "event_occurrences_bingo_event_id_race_id_unique" UNIQUE("bingo_event_id","race_id")
 );
 --> statement-breakpoint
-CREATE TABLE "ampf1"."participants" (
+CREATE TABLE IF NOT EXISTS "ampf1"."participants" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"name" text NOT NULL,
 	"email" text,
@@ -58,7 +58,7 @@ CREATE TABLE "ampf1"."participants" (
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "ampf1"."picks" (
+CREATE TABLE IF NOT EXISTS "ampf1"."picks" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"participant_id" integer NOT NULL,
 	"race_id" integer NOT NULL,
@@ -68,7 +68,7 @@ CREATE TABLE "ampf1"."picks" (
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "ampf1"."race_results" (
+CREATE TABLE IF NOT EXISTS "ampf1"."race_results" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"race_id" integer NOT NULL,
 	"driver_id" integer NOT NULL,
@@ -81,7 +81,7 @@ CREATE TABLE "ampf1"."race_results" (
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "ampf1"."races" (
+CREATE TABLE IF NOT EXISTS "ampf1"."races" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"season_id" integer NOT NULL,
 	"round" integer NOT NULL,
@@ -94,7 +94,7 @@ CREATE TABLE "ampf1"."races" (
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "ampf1"."seasons" (
+CREATE TABLE IF NOT EXISTS "ampf1"."seasons" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"year" integer NOT NULL,
 	"name" text NOT NULL,
@@ -103,7 +103,7 @@ CREATE TABLE "ampf1"."seasons" (
 	CONSTRAINT "seasons_year_unique" UNIQUE("year")
 );
 --> statement-breakpoint
-CREATE TABLE "ampf1"."system_settings" (
+CREATE TABLE IF NOT EXISTS "ampf1"."system_settings" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"key" text NOT NULL,
 	"value" text,
