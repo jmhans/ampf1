@@ -40,6 +40,16 @@ export default async function RacesPage() {
     }).format(date);
   };
 
+  const formatStartTime = (date: Date | null) => {
+    if (!date) return 'TBD';
+    return new Intl.DateTimeFormat('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      timeZone: 'America/Chicago',
+      timeZoneName: 'short',
+    }).format(date);
+  };
+
   return (
     <div>
       {/* Header */}
@@ -86,12 +96,18 @@ export default async function RacesPage() {
               )}
             </div>
 
-            {/* Date */}
-            <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+            {/* Date and start time */}
+            <div className="pt-4 border-t border-gray-200 dark:border-gray-700 space-y-1">
               <p className="text-sm">
                 <span className="text-gray-500 dark:text-gray-400">Date: </span>
                 <span className="font-semibold text-gray-900 dark:text-white">
                   {formatDate(race.raceDate)}
+                </span>
+              </p>
+              <p className="text-sm">
+                <span className="text-gray-500 dark:text-gray-400">Start: </span>
+                <span className="font-semibold text-gray-900 dark:text-white">
+                  {formatStartTime(race.raceStartTime)}
                 </span>
               </p>
             </div>

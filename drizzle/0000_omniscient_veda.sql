@@ -1,6 +1,6 @@
-CREATE SCHEMA "ampf1";
+CREATE SCHEMA IF NOT EXISTS "ampf1";
 --> statement-breakpoint
-CREATE TABLE "ampf1"."bingo_events" (
+CREATE TABLE IF NOT EXISTS "ampf1"."bingo_events" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"name" text NOT NULL,
 	"description" text,
@@ -10,7 +10,7 @@ CREATE TABLE "ampf1"."bingo_events" (
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "ampf1"."drivers" (
+CREATE TABLE IF NOT EXISTS "ampf1"."drivers" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"name" text NOT NULL,
 	"team" text NOT NULL,
@@ -20,7 +20,7 @@ CREATE TABLE "ampf1"."drivers" (
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "ampf1"."entry_card_squares" (
+CREATE TABLE IF NOT EXISTS "ampf1"."entry_card_squares" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"entry_card_id" integer NOT NULL,
 	"bingo_event_id" integer,
@@ -30,7 +30,7 @@ CREATE TABLE "ampf1"."entry_card_squares" (
 	CONSTRAINT "entry_card_squares_entry_card_id_position_unique" UNIQUE("entry_card_id","position")
 );
 --> statement-breakpoint
-CREATE TABLE "ampf1"."entry_cards" (
+CREATE TABLE IF NOT EXISTS "ampf1"."entry_cards" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"participant_id" integer NOT NULL,
 	"season_id" integer NOT NULL,
@@ -39,7 +39,7 @@ CREATE TABLE "ampf1"."entry_cards" (
 	CONSTRAINT "entry_cards_participant_id_season_id_race_id_unique" UNIQUE("participant_id","season_id","race_id")
 );
 --> statement-breakpoint
-CREATE TABLE "ampf1"."event_occurrences" (
+CREATE TABLE IF NOT EXISTS "ampf1"."event_occurrences" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"bingo_event_id" integer NOT NULL,
 	"race_id" integer NOT NULL,
@@ -49,7 +49,7 @@ CREATE TABLE "ampf1"."event_occurrences" (
 	CONSTRAINT "event_occurrences_bingo_event_id_race_id_unique" UNIQUE("bingo_event_id","race_id")
 );
 --> statement-breakpoint
-CREATE TABLE "ampf1"."participants" (
+CREATE TABLE IF NOT EXISTS "ampf1"."participants" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"name" text NOT NULL,
 	"email" text,
@@ -58,7 +58,7 @@ CREATE TABLE "ampf1"."participants" (
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "ampf1"."picks" (
+CREATE TABLE IF NOT EXISTS "ampf1"."picks" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"participant_id" integer NOT NULL,
 	"race_id" integer NOT NULL,
@@ -68,7 +68,7 @@ CREATE TABLE "ampf1"."picks" (
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "ampf1"."race_results" (
+CREATE TABLE IF NOT EXISTS "ampf1"."race_results" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"race_id" integer NOT NULL,
 	"driver_id" integer NOT NULL,
@@ -81,7 +81,7 @@ CREATE TABLE "ampf1"."race_results" (
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "ampf1"."races" (
+CREATE TABLE IF NOT EXISTS "ampf1"."races" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"season_id" integer NOT NULL,
 	"round" integer NOT NULL,
@@ -94,7 +94,7 @@ CREATE TABLE "ampf1"."races" (
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "ampf1"."seasons" (
+CREATE TABLE IF NOT EXISTS "ampf1"."seasons" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"year" integer NOT NULL,
 	"name" text NOT NULL,
@@ -103,7 +103,7 @@ CREATE TABLE "ampf1"."seasons" (
 	CONSTRAINT "seasons_year_unique" UNIQUE("year")
 );
 --> statement-breakpoint
-CREATE TABLE "ampf1"."system_settings" (
+CREATE TABLE IF NOT EXISTS "ampf1"."system_settings" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"key" text NOT NULL,
 	"value" text,
@@ -111,16 +111,80 @@ CREATE TABLE "ampf1"."system_settings" (
 	CONSTRAINT "system_settings_key_unique" UNIQUE("key")
 );
 --> statement-breakpoint
-ALTER TABLE "ampf1"."entry_card_squares" ADD CONSTRAINT "entry_card_squares_entry_card_id_entry_cards_id_fk" FOREIGN KEY ("entry_card_id") REFERENCES "ampf1"."entry_cards"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "ampf1"."entry_card_squares" ADD CONSTRAINT "entry_card_squares_bingo_event_id_bingo_events_id_fk" FOREIGN KEY ("bingo_event_id") REFERENCES "ampf1"."bingo_events"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "ampf1"."entry_cards" ADD CONSTRAINT "entry_cards_participant_id_participants_id_fk" FOREIGN KEY ("participant_id") REFERENCES "ampf1"."participants"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "ampf1"."entry_cards" ADD CONSTRAINT "entry_cards_season_id_seasons_id_fk" FOREIGN KEY ("season_id") REFERENCES "ampf1"."seasons"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "ampf1"."entry_cards" ADD CONSTRAINT "entry_cards_race_id_races_id_fk" FOREIGN KEY ("race_id") REFERENCES "ampf1"."races"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "ampf1"."event_occurrences" ADD CONSTRAINT "event_occurrences_bingo_event_id_bingo_events_id_fk" FOREIGN KEY ("bingo_event_id") REFERENCES "ampf1"."bingo_events"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "ampf1"."event_occurrences" ADD CONSTRAINT "event_occurrences_race_id_races_id_fk" FOREIGN KEY ("race_id") REFERENCES "ampf1"."races"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "ampf1"."picks" ADD CONSTRAINT "picks_participant_id_participants_id_fk" FOREIGN KEY ("participant_id") REFERENCES "ampf1"."participants"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "ampf1"."picks" ADD CONSTRAINT "picks_race_id_races_id_fk" FOREIGN KEY ("race_id") REFERENCES "ampf1"."races"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "ampf1"."picks" ADD CONSTRAINT "picks_driver_id_drivers_id_fk" FOREIGN KEY ("driver_id") REFERENCES "ampf1"."drivers"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "ampf1"."race_results" ADD CONSTRAINT "race_results_race_id_races_id_fk" FOREIGN KEY ("race_id") REFERENCES "ampf1"."races"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "ampf1"."race_results" ADD CONSTRAINT "race_results_driver_id_drivers_id_fk" FOREIGN KEY ("driver_id") REFERENCES "ampf1"."drivers"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "ampf1"."races" ADD CONSTRAINT "races_season_id_seasons_id_fk" FOREIGN KEY ("season_id") REFERENCES "ampf1"."seasons"("id") ON DELETE cascade ON UPDATE no action;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints WHERE constraint_name = 'entry_card_squares_entry_card_id_entry_cards_id_fk') THEN
+    ALTER TABLE "ampf1"."entry_card_squares" ADD CONSTRAINT "entry_card_squares_entry_card_id_entry_cards_id_fk" FOREIGN KEY ("entry_card_id") REFERENCES "ampf1"."entry_cards"("id") ON DELETE cascade ON UPDATE no action;
+  END IF;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints WHERE constraint_name = 'entry_card_squares_bingo_event_id_bingo_events_id_fk') THEN
+    ALTER TABLE "ampf1"."entry_card_squares" ADD CONSTRAINT "entry_card_squares_bingo_event_id_bingo_events_id_fk" FOREIGN KEY ("bingo_event_id") REFERENCES "ampf1"."bingo_events"("id") ON DELETE set null ON UPDATE no action;
+  END IF;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints WHERE constraint_name = 'entry_cards_participant_id_participants_id_fk') THEN
+    ALTER TABLE "ampf1"."entry_cards" ADD CONSTRAINT "entry_cards_participant_id_participants_id_fk" FOREIGN KEY ("participant_id") REFERENCES "ampf1"."participants"("id") ON DELETE cascade ON UPDATE no action;
+  END IF;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints WHERE constraint_name = 'entry_cards_season_id_seasons_id_fk') THEN
+    ALTER TABLE "ampf1"."entry_cards" ADD CONSTRAINT "entry_cards_season_id_seasons_id_fk" FOREIGN KEY ("season_id") REFERENCES "ampf1"."seasons"("id") ON DELETE cascade ON UPDATE no action;
+  END IF;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints WHERE constraint_name = 'entry_cards_race_id_races_id_fk') THEN
+    ALTER TABLE "ampf1"."entry_cards" ADD CONSTRAINT "entry_cards_race_id_races_id_fk" FOREIGN KEY ("race_id") REFERENCES "ampf1"."races"("id") ON DELETE cascade ON UPDATE no action;
+  END IF;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints WHERE constraint_name = 'event_occurrences_bingo_event_id_bingo_events_id_fk') THEN
+    ALTER TABLE "ampf1"."event_occurrences" ADD CONSTRAINT "event_occurrences_bingo_event_id_bingo_events_id_fk" FOREIGN KEY ("bingo_event_id") REFERENCES "ampf1"."bingo_events"("id") ON DELETE cascade ON UPDATE no action;
+  END IF;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints WHERE constraint_name = 'event_occurrences_race_id_races_id_fk') THEN
+    ALTER TABLE "ampf1"."event_occurrences" ADD CONSTRAINT "event_occurrences_race_id_races_id_fk" FOREIGN KEY ("race_id") REFERENCES "ampf1"."races"("id") ON DELETE cascade ON UPDATE no action;
+  END IF;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints WHERE constraint_name = 'picks_participant_id_participants_id_fk') THEN
+    ALTER TABLE "ampf1"."picks" ADD CONSTRAINT "picks_participant_id_participants_id_fk" FOREIGN KEY ("participant_id") REFERENCES "ampf1"."participants"("id") ON DELETE cascade ON UPDATE no action;
+  END IF;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints WHERE constraint_name = 'picks_race_id_races_id_fk') THEN
+    ALTER TABLE "ampf1"."picks" ADD CONSTRAINT "picks_race_id_races_id_fk" FOREIGN KEY ("race_id") REFERENCES "ampf1"."races"("id") ON DELETE cascade ON UPDATE no action;
+  END IF;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints WHERE constraint_name = 'picks_driver_id_drivers_id_fk') THEN
+    ALTER TABLE "ampf1"."picks" ADD CONSTRAINT "picks_driver_id_drivers_id_fk" FOREIGN KEY ("driver_id") REFERENCES "ampf1"."drivers"("id") ON DELETE set null ON UPDATE no action;
+  END IF;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints WHERE constraint_name = 'race_results_race_id_races_id_fk') THEN
+    ALTER TABLE "ampf1"."race_results" ADD CONSTRAINT "race_results_race_id_races_id_fk" FOREIGN KEY ("race_id") REFERENCES "ampf1"."races"("id") ON DELETE cascade ON UPDATE no action;
+  END IF;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints WHERE constraint_name = 'race_results_driver_id_drivers_id_fk') THEN
+    ALTER TABLE "ampf1"."race_results" ADD CONSTRAINT "race_results_driver_id_drivers_id_fk" FOREIGN KEY ("driver_id") REFERENCES "ampf1"."drivers"("id") ON DELETE cascade ON UPDATE no action;
+  END IF;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints WHERE constraint_name = 'races_season_id_seasons_id_fk') THEN
+    ALTER TABLE "ampf1"."races" ADD CONSTRAINT "races_season_id_seasons_id_fk" FOREIGN KEY ("season_id") REFERENCES "ampf1"."seasons"("id") ON DELETE cascade ON UPDATE no action;
+  END IF;
+END $$;
