@@ -64,7 +64,7 @@ export default async function ParticipantCardPage({
           </Link>
           <ParticipantNameEditor participantId={participant.id} initialName={participant.name} />
         </div>
-        <p className="text-gray-600">No bingo card generated yet. Go to Admin > Generate Cards.</p>
+        <p className="text-gray-600">No bingo card generated yet. Go to Admin &gt; Generate Cards.</p>
       </div>
     );
   }
