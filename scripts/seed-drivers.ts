@@ -69,6 +69,10 @@ const DRIVERS_2026 = [
   { name: 'George Russell', team: 'Mercedes', number: 63, nationality: 'British', imageUrl: getDriverImageUrl('mercedes', 'georus01') },
   { name: 'Kimi Antonelli', team: 'Mercedes', number: 12, nationality: 'Italian', imageUrl: getDriverImageUrl('mercedes', 'andant01') },
 
+  // Racing Red Bulls
+  { name: 'Liam Lawson', team: 'Racing Red Bulls', number: 30, nationality: 'New Zealand', imageUrl: getDriverImageUrl('racingredbulls', 'lialaw01') },
+  { name: 'Arvid Lindblad', team: 'Racing Red Bulls', number: 6, nationality: 'British', imageUrl: getDriverImageUrl('racingredbulls', 'arvlin01') },
+
   // Red Bull Racing
   { name: 'Max Verstappen', team: 'Red Bull Racing', number: 1, nationality: 'Dutch', imageUrl: getDriverImageUrl('redbullracing', 'maxver01') },
   { name: 'Isack Hadjar', team: 'Red Bull Racing', number: 32, nationality: 'Swiss', imageUrl: getDriverImageUrl('redbullracing', 'isahad01') },
