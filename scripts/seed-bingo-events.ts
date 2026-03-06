@@ -10,9 +10,9 @@ import { bingoEvents } from '../app/lib/db/schema';
 import * as fs from 'fs';
 import * as path from 'path';
 
-// Use POSTGRES_URL_DEV if set (for dev/preview), fall back to POSTGRES_URL (for prod)
-const url = process.env.POSTGRES_URL_DEV || process.env.POSTGRES_URL;
-if (!url) throw new Error('No POSTGRES_URL or POSTGRES_URL_DEV set');
+// Use POSTGRES_URL (configured per environment in .env or Vercel)
+const url = process.env.POSTGRES_URL;
+if (!url) throw new Error('POSTGRES_URL not set');
 
 const sql = neon(url);
 const db = drizzle(sql);
