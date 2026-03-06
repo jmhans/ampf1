@@ -12,8 +12,8 @@ import {
   entryCardSquares,
 } from '@/app/lib/db/schema';
 
-const dbUrl = process.env.POSTGRES_URL;
-if (!dbUrl) throw new Error('POSTGRES_URL not set');
+const dbUrl = process.env.POSTGRES_URL_DEV || process.env.POSTGRES_URL;
+if (!dbUrl) throw new Error('POSTGRES_URL or POSTGRES_URL_DEV not set');
 
 const client = neon(dbUrl);
 const db = drizzle(client);
