@@ -42,9 +42,6 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { participantIds, categoryCounts } = body;
 
-    // Debug: log what we received
-    console.log('POST /api/admin/bingo-cards - participantIds:', participantIds, 'selectAll:', participantIds && participantIds.length === 0);
-
     if (!categoryCounts || typeof categoryCounts !== 'object') {
       return Response.json(
         { error: 'categoryCounts is required' },
@@ -75,10 +72,8 @@ export async function POST(request: Request) {
         .select()
         .from(participants)
         .where(inArray(participants.id, participantIds))
-      console.log('Filtering by participantIds:', participantIds.length, 'participants found:', targetParticipants.length);
     } else {
       targetParticipants = await db.select().from(participants);
-      console.log('Getting all participants:', targetParticipants.length);
     }
 
     const results = [];

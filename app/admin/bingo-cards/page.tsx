@@ -66,11 +66,22 @@ export default function BingoCardsPage() {
   };
 
   const handleParticipantToggle = (participantId: number) => {
-    setSelectedParticipants((prev) =>
-      prev.includes(participantId)
+    setSelectedParticipants((prev) => {
+      const updated = prev.includes(participantId)
         ? prev.filter((id) => id !== participantId)
-        : [...prev, participantId]
-    );
+        : [...prev, participantId];
+      
+      // Auto-deselect "Select All" if any participant is deselected
+      if (updated.length < participants.length) {
+        setSelectAll(false);
+      }
+      // Auto-select "Select All" if all participants are selected
+      if (updated.length === participants.length) {
+        setSelectAll(true);
+      }
+      
+      return updated;
+    });
   };
 
   const handleSelectAll = (checked: boolean) => {
