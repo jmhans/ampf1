@@ -91,7 +91,7 @@ export default function BingoCardsPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          participantIds: selectAll ? [] : selectedParticipants,
+          participantIds: selectAll ? participants.map((p) => p.id) : selectedParticipants,
           categoryCounts,
         }),
       });
