@@ -11,7 +11,7 @@ import {
   type BingoEvent,
 } from '@/app/lib/actions/events';
 
-const CATEGORIES = ['safety', 'race', 'driver', 'pit', 'strategy', 'other'];
+const CATEGORIES = ['Common', 'Uncommon', 'Rare'];
 
 type Mode = 'view' | 'edit';
 
