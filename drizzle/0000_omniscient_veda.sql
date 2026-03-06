@@ -1,4 +1,4 @@
-CREATE SCHEMA "ampf1";
+CREATE SCHEMA IF NOT EXISTS "ampf1";
 --> statement-breakpoint
 CREATE TABLE "ampf1"."bingo_events" (
 	"id" serial PRIMARY KEY NOT NULL,
