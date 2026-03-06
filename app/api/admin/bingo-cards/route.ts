@@ -76,6 +76,10 @@ export async function POST(request: Request) {
       targetParticipants = await db.select().from(participants);
     }
 
+    console.log('🎲 Bingo Card Generation Started');
+    console.log('Participants to generate:', targetParticipants.length);
+    console.log('Category Counts:', categoryCounts);
+
     const results = [];
 
     // For each participant, generate card
@@ -98,10 +102,12 @@ export async function POST(request: Request) {
 
         if (existingCard.length > 0) {
           cardId = existingCard[0].id;
+          console.log(`  ✏️ Existing card found (ID: ${cardId}), deleting old squares`);
           // Delete existing squares
-          await db.delete(entryCardSquares).where(
+          const deleteResult = await db.delete(entryCardSquares).where(
             eq(entryCardSquares.entryCardId, cardId)
           );
+          console.log(`  ✓ Deleted old squares`);
         } else {
           // Create new card
           const newCard = await db
@@ -113,6 +119,7 @@ export async function POST(request: Request) {
             })
             .returning({ id: entryCards.id });
           cardId = newCard[0].id;
+          console.log(`  ➕ New card created (ID: ${cardId})`);
         }
 
         // Fetch events by category
@@ -139,6 +146,9 @@ export async function POST(request: Request) {
 
         // Shuffle final event list
         const finalEvents = shuffleArray(selectedEvents).slice(0, 24); // 24 + 1 free space = 25
+
+        console.log(`  📋 Selected ${finalEvents.length} events for card`);
+        console.log(`  Events: ${finalEvents.map(e => e.name).join(', ')}`);
 
         // Create squares with positions 1-25 (13 is free space)
         const squaresToInsert: (typeof entryCardSquares.$inferInsert)[] = [];
@@ -168,6 +178,8 @@ export async function POST(request: Request) {
         }
 
         await db.insert(entryCardSquares).values(squaresToInsert);
+        
+        console.log(`  ✓ Inserted ${squaresToInsert.length} squares`);
 
         results.push({
           participantId: participant.id,
