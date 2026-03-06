@@ -102,7 +102,7 @@ export async function POST(request: Request) {
 
         if (existingCard.length > 0) {
           cardId = existingCard[0].id;
-          console.log(`  ✏️ Existing card found (ID: ${cardId}), deleting ${existingCard[0].squares?.length || 'unknown'} old squares`);
+          console.log(`  ✏️ Existing card found (ID: ${cardId}), deleting old squares`);
           // Delete existing squares
           const deleteResult = await db.delete(entryCardSquares).where(
             eq(entryCardSquares.entryCardId, cardId)
