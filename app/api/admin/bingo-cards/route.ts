@@ -3,7 +3,7 @@ import { isAdmin } from '@/app/lib/auth-utils';
 import { redirect } from 'next/navigation';
 import { drizzle } from 'drizzle-orm/neon-http';
 import { neon } from '@neondatabase/serverless';
-import { desc, eq, and, sql } from 'drizzle-orm';
+import { desc, eq, and, sql, isNull } from 'drizzle-orm';
 import {
   participants,
   seasons,
@@ -89,7 +89,7 @@ export async function POST(request: Request) {
             and(
               eq(entryCards.participantId, participant.id),
               eq(entryCards.seasonId, seasonId),
-              eq(entryCards.raceId, null)
+              isNull(entryCards.raceId)
             )
           )
           .limit(1);
