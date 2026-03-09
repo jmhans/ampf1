@@ -1,3 +1,7 @@
+'use client';
+
+import { useState } from 'react';
+
 export interface CardSquare {
   id: number;
   name: string;
@@ -29,6 +33,56 @@ function Square({ square, isBingoSquare }: { square: CardSquare; isBingoSquare?:
 
 const COLUMN_LABELS = ['B', 'I', 'N', 'G', 'O'];
 
+// Button to shout BINGO
+function ShoutBingoButton({ 
+  entryCardId, 
+  participantId 
+}: { 
+  entryCardId: number; 
+  participantId: number;
+}) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasShoutedBingo, setHasShoutedBingo] = useState(false);
+
+  const handleShoutBingo = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/bingo-shouts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          entryCardId,
+          participantId,
+        }),
+      });
+
+      if (response.ok) {
+        setHasShoutedBingo(true);
+      }
+    } catch (error) {
+      console.error('Failed to shout BINGO:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (hasShoutedBingo) {
+    return (
+      <p className="text-sm font-medium text-white">✓ BINGO registered!</p>
+    );
+  }
+
+  return (
+    <button
+      onClick={handleShoutBingo}
+      disabled={isLoading}
+      className="mt-3 rounded-lg bg-yellow-500 hover:bg-yellow-600 disabled:opacity-50 px-6 py-2 font-bold text-gray-900 transition-colors"
+    >
+      {isLoading ? 'Registering...' : '📢 Shout BINGO'}
+    </button>
+  );
+}
+
 // All possible winning lines: 5 rows, 5 columns, 2 diagonals
 const LINES = [
   // Rows
@@ -51,9 +105,13 @@ const LINES = [
 export default function BingoCard({
   squares,
   participantName,
+  participantId,
+  entryCardId,
 }: {
   squares: CardSquare[];
   participantName: string;
+  participantId: number;
+  entryCardId: number;
 }) {
   const achievedCount = squares.filter((s) => s.isAchieved && !s.isFree).length;
 
@@ -71,6 +129,7 @@ export default function BingoCard({
           <p className="mt-1 text-sm font-medium opacity-90">
             {participantName} has achieved a bingo!
           </p>
+          <ShoutBingoButton entryCardId={entryCardId} participantId={participantId} />
         </div>
       )}
 
