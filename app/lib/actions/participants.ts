@@ -27,12 +27,15 @@ export async function joinPool(formData: FormData, auth0Id: string, email: strin
   const name = (formData.get('name') as string)?.trim();
   if (!name) throw new Error('Name is required');
 
+  const userName = (formData.get('userName') as string)?.trim() || null;
+
   // Prevent duplicate registrations
   const existing = await getParticipantByAuth0Id(auth0Id);
   if (existing) throw new Error('Already registered');
 
   await db.insert(participants).values({
     name,
+    userName,
     email,
     auth0Id,
   });
@@ -47,6 +50,18 @@ export async function updateParticipantName(participantId: number, newName: stri
   await db
     .update(participants)
     .set({ name: trimmed })
+    .where(eq(participants.id, participantId));
+
+  revalidatePath(`/participants/${participantId}`);
+  revalidatePath('/participants');
+}
+
+export async function updateParticipantUserName(participantId: number, newUserName: string) {
+  const trimmed = newUserName.trim();
+
+  await db
+    .update(participants)
+    .set({ userName: trimmed || null })
     .where(eq(participants.id, participantId));
 
   revalidatePath(`/participants/${participantId}`);

@@ -40,14 +40,22 @@ export default function JoinPoolButton({
   }
 
   return (
-    <form action={handleSubmit} className="flex items-center gap-3">
-      <input
-        name="name"
-        required
-        defaultValue={displayName}
-        placeholder="Your display name"
-        className="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 w-52"
-      />
+    <form action={handleSubmit} className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-col gap-2">
+        <input
+          name="userName"
+          defaultValue=""
+          placeholder="Your name (owner)"
+          className="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 w-52"
+        />
+        <input
+          name="name"
+          required
+          defaultValue={displayName}
+          placeholder="Entry name"
+          className="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 w-52"
+        />
+      </div>
       <button
         type="submit"
         disabled={isPending}

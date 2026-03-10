@@ -7,6 +7,7 @@ export const ampf1Schema = pgSchema('ampf1');
 export const participants = ampf1Schema.table('participants', {
   id: serial('id').primaryKey(),
   name: text('name').notNull(),
+  userName: text('user_name'),
   email: text('email'),
   auth0Id: text('auth0_id'),
   createdAt: timestamp('created_at').defaultNow().notNull(),

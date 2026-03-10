@@ -1,41 +1,44 @@
 'use client';
 
 import { useState } from 'react';
-import { updateParticipantName } from '@/app/lib/actions/participants';
+import { updateParticipantName, updateParticipantUserName } from '@/app/lib/actions/participants';
 
-export default function ParticipantNameEditor({
-  participantId,
-  initialName,
+function InlineEditor({
+  label,
+  value: initialValue,
+  onSave,
+  className,
 }: {
-  participantId: number;
-  initialName: string;
+  label: string;
+  value: string;
+  onSave: (value: string) => Promise<void>;
+  className?: string;
 }) {
   const [isEditing, setIsEditing] = useState(false);
-  const [value, setValue] = useState(initialName);
+  const [value, setValue] = useState(initialValue);
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSave = async () => {
     const trimmed = value.trim();
-    if (!trimmed || trimmed === initialName) {
+    if (trimmed === initialValue) {
+      setValue(initialValue);
       setIsEditing(false);
-      setValue(initialName);
       return;
     }
-
     setIsSaving(true);
     try {
-      await updateParticipantName(participantId, trimmed);
+      await onSave(trimmed);
       setIsEditing(false);
     } catch (err) {
-      console.error('Failed to update name:', err);
-      setValue(initialName);
+      console.error(`Failed to update ${label}:`, err);
+      setValue(initialValue);
     } finally {
       setIsSaving(false);
     }
   };
 
   const handleCancel = () => {
-    setValue(initialName);
+    setValue(initialValue);
     setIsEditing(false);
   };
 
@@ -46,12 +49,12 @@ export default function ParticipantNameEditor({
 
   if (!isEditing) {
     return (
-      <div className="flex items-center gap-2">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{initialName}</h2>
+      <div className={`flex items-center gap-2 ${className ?? ''}`}>
+        <span>{value || <span className="text-gray-400 italic">—</span>}</span>
         <button
           onClick={() => setIsEditing(true)}
           className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
-          title="Edit name"
+          title={`Edit ${label}`}
         >
           ✏️
         </button>
@@ -60,7 +63,7 @@ export default function ParticipantNameEditor({
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className={`flex items-center gap-2 ${className ?? ''}`}>
       <input
         type="text"
         value={value}
@@ -68,7 +71,8 @@ export default function ParticipantNameEditor({
         onKeyDown={handleKeyDown}
         autoFocus
         disabled={isSaving}
-        className="text-2xl font-bold bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-gray-900 dark:text-white outline-none focus:border-red-500 dark:focus:border-red-400 disabled:opacity-50"
+        placeholder={label}
+        className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-gray-900 dark:text-white outline-none focus:border-red-500 dark:focus:border-red-400 disabled:opacity-50"
       />
       <button
         onClick={handleSave}
@@ -84,6 +88,42 @@ export default function ParticipantNameEditor({
       >
         ✕
       </button>
+    </div>
+  );
+}
+
+export default function ParticipantNameEditor({
+  participantId,
+  initialName,
+  initialUserName,
+}: {
+  participantId: number;
+  initialName: string;
+  initialUserName: string | null;
+}) {
+  return (
+    <div className="flex flex-col gap-1">
+      <div className="flex items-center gap-2">
+        <span className="text-xs text-gray-500 dark:text-gray-400 w-20">Owner:</span>
+        <InlineEditor
+          label="owner name"
+          value={initialUserName ?? ''}
+          onSave={(v) => updateParticipantUserName(participantId, v)}
+          className="text-base text-gray-700 dark:text-gray-300"
+        />
+      </div>
+      <div className="flex items-center gap-2">
+        <span className="text-xs text-gray-500 dark:text-gray-400 w-20">Entry:</span>
+        <InlineEditor
+          label="entry name"
+          value={initialName}
+          onSave={(v) => {
+            if (!v) return Promise.reject(new Error('Name cannot be empty'));
+            return updateParticipantName(participantId, v);
+          }}
+          className="text-2xl font-bold text-gray-900 dark:text-white"
+        />
+      </div>
     </div>
   );
 }
