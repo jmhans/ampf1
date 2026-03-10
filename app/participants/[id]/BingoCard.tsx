@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export interface CardSquare {
   id: number;
@@ -43,6 +43,28 @@ function ShoutBingoButton({
 }) {
   const [isLoading, setIsLoading] = useState(false);
   const [hasShoutedBingo, setHasShoutedBingo] = useState(false);
+  const [isChecking, setIsChecking] = useState(true);
+
+  // Check if user has already shouted when component mounts
+  useEffect(() => {
+    const checkShoutStatus = async () => {
+      try {
+        const response = await fetch(
+          `/api/bingo-shouts/check?entryCardId=${entryCardId}&participantId=${participantId}`
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setHasShoutedBingo(data.hasShoutedBingo);
+        }
+      } catch (error) {
+        console.error('Failed to check shout status:', error);
+      } finally {
+        setIsChecking(false);
+      }
+    };
+
+    checkShoutStatus();
+  }, [entryCardId, participantId]);
 
   const handleShoutBingo = async () => {
     setIsLoading(true);
@@ -66,9 +88,15 @@ function ShoutBingoButton({
     }
   };
 
+  if (isChecking) {
+    return (
+      <p className="text-sm text-gray-300">Loading...</p>
+    );
+  }
+
   if (hasShoutedBingo) {
     return (
-      <p className="text-sm font-medium text-white">✓ BINGO registered!</p>
+      <p className="text-sm font-medium text-green-400">✓ You've called a good Bingo!</p>
     );
   }
 

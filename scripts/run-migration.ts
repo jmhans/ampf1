@@ -14,7 +14,7 @@ if (!dbUrl) {
 console.log('Using database endpoint:', dbUrl.substring(0, 50) + '...');
 
 async function runMigration() {
-  const client = neon(dbUrl);
+  const client = neon(dbUrl!);
   
   try {
     console.log('Reading migration file...');
