@@ -8,7 +8,9 @@ import {
   deleteEvent,
   toggleEventAchieved,
   toggleEventActive,
+  recordEventOccurrence,
   type BingoEvent,
+  type Race,
 } from '@/app/lib/actions/events';
 
 const CATEGORIES = ['Common', 'Uncommon', 'Rare'];
@@ -90,14 +92,15 @@ function EventForm({
   );
 }
 
-function EventRow({ event }: { event: BingoEvent }) {
+function EventRow({ event, races }: { event: BingoEvent; races: Race[] }) {
   const [mode, setMode] = useState<Mode>('view');
+  const [selectedRaceId, setSelectedRaceId] = useState<string>('');
   const [isPending, startTransition] = useTransition();
 
   if (mode === 'edit') {
     return (
       <tr className="border-t border-gray-100 dark:border-gray-700 bg-red-50 dark:bg-red-900/10">
-        <td colSpan={5} className="px-4 py-3">
+        <td colSpan={6} className="px-4 py-3">
           <EventForm
             initial={event}
             submitLabel="Save"
@@ -132,18 +135,39 @@ function EventRow({ event }: { event: BingoEvent }) {
         }
       </td>
 
-      {/* Achieved badge */}
+      {/* Race dropdown */}
+      <td className="px-4 py-3">
+        <select
+          value={selectedRaceId}
+          onChange={(e) => setSelectedRaceId(e.target.value)}
+          className="rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-2 py-1 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500"
+        >
+          <option value="">Select race...</option>
+          {races.map((race) => (
+            <option key={race.id} value={race.id}>
+              {race.name}
+            </option>
+          ))}
+        </select>
+      </td>
+
+      {/* Mark achieved button */}
       <td className="px-4 py-3">
         <button
-          disabled={isPending}
-          onClick={() => startTransition(() => toggleEventAchieved(event.id, event.isAchieved))}
+          disabled={isPending || !selectedRaceId}
+          onClick={() => {
+            startTransition(async () => {
+              await recordEventOccurrence(event.id, parseInt(selectedRaceId));
+              setSelectedRaceId('');
+            });
+          }}
           className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${
             event.isAchieved
-              ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400 hover:bg-green-200'
-              : 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
+              ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400'
+              : 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/60 disabled:opacity-50'
           }`}
         >
-          {event.isAchieved ? '✅ Achieved' : 'Not achieved'}
+          {event.isAchieved ? '✅ Achieved' : 'Mark achieved'}
         </button>
       </td>
 
@@ -188,7 +212,7 @@ function EventRow({ event }: { event: BingoEvent }) {
   );
 }
 
-export default function EventsClient({ events }: { events: BingoEvent[] }) {
+export default function EventsClient({ events, races }: { events: BingoEvent[]; races: Race[] }) {
   const [isPending, startTransition] = useTransition();
   const [showInactive, setShowInactive] = useState(false);
 
@@ -240,6 +264,7 @@ export default function EventsClient({ events }: { events: BingoEvent[] }) {
               <tr>
                 <th className="px-4 py-3">Name</th>
                 <th className="px-4 py-3">Category</th>
+                <th className="px-4 py-3">Race</th>
                 <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3">Active</th>
                 <th className="px-4 py-3">Actions</th>
@@ -247,7 +272,7 @@ export default function EventsClient({ events }: { events: BingoEvent[] }) {
             </thead>
             <tbody>
               {visible.map((event) => (
-                <EventRow key={event.id} event={event} />
+                <EventRow key={event.id} event={event} races={races} />
               ))}
             </tbody>
           </table>
