@@ -114,6 +114,7 @@ export const entryCards = ampf1Schema.table('entry_cards', {
     .references(() => seasons.id, { onDelete: 'cascade' }),
   raceId: integer('race_id')
     .references(() => races.id, { onDelete: 'cascade' }), // null = season-wide card
+  redrawCount: integer('redraw_count').default(0).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 }, (t) => [
   unique().on(t.participantId, t.seasonId, t.raceId), // one card per participant per race
