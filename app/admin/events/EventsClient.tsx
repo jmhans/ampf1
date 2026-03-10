@@ -10,6 +10,7 @@ import {
   toggleEventActive,
   recordEventOccurrence,
   type BingoEvent,
+  type BingoEventWithRace,
   type Race,
 } from '@/app/lib/actions/events';
 
@@ -92,7 +93,7 @@ function EventForm({
   );
 }
 
-function EventRow({ event, races }: { event: BingoEvent; races: Race[] }) {
+function EventRow({ event, races }: { event: BingoEventWithRace; races: Race[] }) {
   const [mode, setMode] = useState<Mode>('view');
   const [selectedRaceId, setSelectedRaceId] = useState<string>('');
   const [isPending, startTransition] = useTransition();
@@ -135,20 +136,26 @@ function EventRow({ event, races }: { event: BingoEvent; races: Race[] }) {
         }
       </td>
 
-      {/* Race dropdown */}
+      {/* Race dropdown / achieved race name */}
       <td className="px-4 py-3">
-        <select
-          value={selectedRaceId}
-          onChange={(e) => setSelectedRaceId(e.target.value)}
-          className="rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-2 py-1 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500"
-        >
-          <option value="">Select race...</option>
-          {races.map((race) => (
-            <option key={race.id} value={race.id}>
-              {race.name}
-            </option>
-          ))}
-        </select>
+        {event.isAchieved && event.achievedRaceNames.length > 0 ? (
+          <span className="text-sm text-gray-700 dark:text-gray-300">
+            {event.achievedRaceNames.join(', ')}
+          </span>
+        ) : (
+          <select
+            value={selectedRaceId}
+            onChange={(e) => setSelectedRaceId(e.target.value)}
+            className="rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-2 py-1 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500"
+          >
+            <option value="">Select race...</option>
+            {races.map((race) => (
+              <option key={race.id} value={race.id}>
+                {race.name}
+              </option>
+            ))}
+          </select>
+        )}
       </td>
 
       {/* Mark achieved button */}
@@ -212,7 +219,7 @@ function EventRow({ event, races }: { event: BingoEvent; races: Race[] }) {
   );
 }
 
-export default function EventsClient({ events, races }: { events: BingoEvent[]; races: Race[] }) {
+export default function EventsClient({ events, races }: { events: BingoEventWithRace[]; races: Race[] }) {
   const [isPending, startTransition] = useTransition();
   const [showInactive, setShowInactive] = useState(false);
 

@@ -8,14 +8,33 @@ import { revalidatePath } from 'next/cache';
 export type BingoEvent = typeof bingoEvents.$inferSelect;
 export type NewBingoEvent = typeof bingoEvents.$inferInsert;
 export type Race = typeof races.$inferSelect;
+export type BingoEventWithRace = BingoEvent & { achievedRaceNames: string[] };
 
 // ── Read ──────────────────────────────────────────────────────────────────────
 
-export async function getAllEvents(): Promise<BingoEvent[]> {
-  return db
-    .select()
-    .from(bingoEvents)
-    .orderBy(bingoEvents.category, bingoEvents.name);
+export async function getAllEvents(): Promise<BingoEventWithRace[]> {
+  const [events, occurrences] = await Promise.all([
+    db.select().from(bingoEvents).orderBy(bingoEvents.category, bingoEvents.name),
+    db
+      .select({ bingoEventId: eventOccurrences.bingoEventId, raceName: races.name })
+      .from(eventOccurrences)
+      .leftJoin(races, eq(races.id, eventOccurrences.raceId)),
+  ]);
+
+  const occurrenceMap = new Map<number, string[]>();
+  for (const occ of occurrences) {
+    if (occ.raceName) {
+      if (!occurrenceMap.has(occ.bingoEventId)) {
+        occurrenceMap.set(occ.bingoEventId, []);
+      }
+      occurrenceMap.get(occ.bingoEventId)!.push(occ.raceName);
+    }
+  }
+
+  return events.map((event) => ({
+    ...event,
+    achievedRaceNames: occurrenceMap.get(event.id) ?? [],
+  }));
 }
 
 export async function getCompletedRaces(): Promise<Race[]> {
