@@ -14,7 +14,7 @@ import * as path from 'path';
 const url = process.env.POSTGRES_URL;
 if (!url) throw new Error('POSTGRES_URL not set');
 
-const sql = neon(url);
+const sql = neon(url!);
 const db = drizzle(sql);
 
 // Simple CSV parser that handles quoted values

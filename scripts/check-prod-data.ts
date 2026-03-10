@@ -12,7 +12,7 @@ if (!url) throw new Error('No POSTGRES_URL set');
 
 console.log('Connecting to:', url.substring(0, 50) + '...');
 
-const sql = neon(url);
+const sql = neon(url!);
 const db = drizzle(sql);
 
 const ampf1Schema = pgSchema('ampf1');

@@ -10,7 +10,7 @@ import { bingoEvents } from '../app/lib/db/schema';
 const url = process.env.POSTGRES_URL;
 if (!url) throw new Error('POSTGRES_URL not set');
 
-const sql = neon(url);
+const sql = neon(url!);
 const db = drizzle(sql);
 
 async function clearBingoEvents() {

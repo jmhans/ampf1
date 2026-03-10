@@ -108,7 +108,12 @@ export default async function ParticipantCardPage({
         </div>
       </div>
 
-      <BingoCard squares={squares} participantName={participant.name} />
+      <BingoCard 
+        squares={squares} 
+        participantName={participant.name} 
+        participantId={participant.id}
+        entryCardId={card[0].id}
+      />
     </div>
   );
 }
