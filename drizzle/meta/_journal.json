@@ -36,6 +36,13 @@
       "when": 1741267035000,
       "tag": "0004_bingo_shouts",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1741270000000,
+      "tag": "0005_add_user_name",
+      "breakpoints": true
     }
   ]
 }

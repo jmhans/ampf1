@@ -64,7 +64,8 @@ export default async function ParticipantsPage() {
             <thead className="bg-gray-50 dark:bg-gray-700/50 text-xs uppercase text-gray-500 dark:text-gray-400">
               <tr>
                 <th className="px-4 py-3">#</th>
-                <th className="px-4 py-3">Name</th>
+                <th className="px-4 py-3">Owner</th>
+                <th className="px-4 py-3">Entry Name</th>
                 <th className="px-4 py-3">Joined</th>
               </tr>
             </thead>
@@ -77,6 +78,12 @@ export default async function ParticipantsPage() {
                   }`}
                 >
                   <td className="px-4 py-3 text-sm text-gray-400">{i + 1}</td>
+                  <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">
+                    {p.userName || <span className="text-gray-400 italic">—</span>}
+                    {p.auth0Id === auth0Id && (
+                      <span className="ml-2 text-xs text-red-500">(you)</span>
+                    )}
+                  </td>
                   <td className="px-4 py-3 font-medium text-gray-900 dark:text-white">
                     <Link
                       href={`/participants/${p.id}`}
@@ -84,9 +91,6 @@ export default async function ParticipantsPage() {
                     >
                       {p.name}
                     </Link>
-                    {p.auth0Id === auth0Id && (
-                      <span className="ml-2 text-xs text-red-500">(you)</span>
-                    )}
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-400">
                     {new Date(p.createdAt).toLocaleDateString()}

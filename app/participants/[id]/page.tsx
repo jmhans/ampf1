@@ -35,7 +35,7 @@ export default async function ParticipantCardPage({
           <Link href="/participants" className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100">
             ←
           </Link>
-          <ParticipantNameEditor participantId={participant.id} initialName={participant.name} />
+          <ParticipantNameEditor participantId={participant.id} initialName={participant.name} initialUserName={participant.userName ?? null} />
         </div>
         <p className="text-gray-600">No active season card generated yet.</p>
       </div>
@@ -62,7 +62,7 @@ export default async function ParticipantCardPage({
           <Link href="/participants" className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100">
             ←
           </Link>
-          <ParticipantNameEditor participantId={participant.id} initialName={participant.name} />
+          <ParticipantNameEditor participantId={participant.id} initialName={participant.name} initialUserName={participant.userName ?? null} />
         </div>
         <p className="text-gray-600">No bingo card generated yet. Go to Admin &gt; Generate Cards.</p>
       </div>
@@ -104,7 +104,7 @@ export default async function ParticipantCardPage({
           ←
         </Link>
         <div className="flex-1">
-          <ParticipantNameEditor participantId={participant.id} initialName={participant.name} />
+          <ParticipantNameEditor participantId={participant.id} initialName={participant.name} initialUserName={participant.userName ?? null} />
         </div>
       </div>
 
