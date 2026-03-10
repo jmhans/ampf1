@@ -13,7 +13,7 @@ import { eq } from 'drizzle-orm';
 const url = process.env.POSTGRES_URL;
 if (!url) throw new Error('POSTGRES_URL not set');
 
-const sql = neon(url);
+const sql = neon(url!);
 const db = drizzle(sql);
 
 const ampf1Schema = pgSchema('ampf1');

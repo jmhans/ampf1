@@ -29,6 +29,13 @@
       "when": 1741184813049,
       "tag": "0003_race_start_time",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1741267035000,
+      "tag": "0004_bingo_shouts",
+      "breakpoints": true
     }
   ]
 }

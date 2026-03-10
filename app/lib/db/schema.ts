@@ -150,7 +150,19 @@ export const eventOccurrences = ampf1Schema.table('event_occurrences', {
 }, (t) => [
   unique().on(t.bingoEventId, t.raceId),      // an event can only be called once per race
 ]);
-
+// Bingo shouts - when a participant claims they've achieved a bingo
+export const bingoShouts = ampf1Schema.table('bingo_shouts', {
+  id: serial('id').primaryKey(),
+  entryCardId: integer('entry_card_id')
+    .notNull()
+    .references(() => entryCards.id, { onDelete: 'cascade' }),
+  participantId: integer('participant_id')
+    .notNull()
+    .references(() => participants.id, { onDelete: 'cascade' }),
+  isVerified: boolean('is_verified').default(false).notNull(), // Admin marks as verified
+  shoutedAt: timestamp('shouted_at').defaultNow().notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
 // ---------------------------------------------------------------------------
 // System settings for app-level metadata
 export const systemSettings = ampf1Schema.table('system_settings', {
