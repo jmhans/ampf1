@@ -5,6 +5,8 @@ import { participants, bingoEvents, entryCards, entryCardSquares, seasons } from
 import { eq, and, isNull, desc } from 'drizzle-orm';
 import BingoCard, { type CardSquare } from './BingoCard';
 import ParticipantNameEditor from './ParticipantNameEditor';
+import RedrawButton from './RedrawButton';
+import { auth0 } from '@/app/lib/auth0';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,16 +19,20 @@ export default async function ParticipantCardPage({
   const participantId = parseInt(id, 10);
   if (isNaN(participantId)) notFound();
 
-  const [participantRows, activeSeason] = await Promise.all([
+  const [participantRows, activeSeason, session] = await Promise.all([
     db.select().from(participants).where(eq(participants.id, participantId)).limit(1),
     db.select().from(seasons)
       .where(eq(seasons.isActive, true))
       .orderBy(desc(seasons.id))
       .limit(1),
+    auth0.getSession(),
   ]);
 
   const participant = participantRows[0];
   if (!participant) notFound();
+
+  // Check if the logged-in user owns this card
+  const isOwner = session?.user?.sub === participant.auth0Id;
 
   if (!activeSeason || activeSeason.length === 0) {
     return (
@@ -114,6 +120,13 @@ export default async function ParticipantCardPage({
         participantId={participant.id}
         entryCardId={card[0].id}
       />
+
+      {isOwner && (
+        <div className="mt-6 max-w-2xl mx-auto p-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+          <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Card Options</h3>
+          <RedrawButton participantId={participant.id} redrawCount={card[0].redrawCount} />
+        </div>
+      )}
     </div>
   );
 }
