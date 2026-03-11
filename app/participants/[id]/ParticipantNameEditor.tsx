@@ -96,33 +96,45 @@ export default function ParticipantNameEditor({
   participantId,
   initialName,
   initialUserName,
+  canEdit,
 }: {
   participantId: number;
   initialName: string;
   initialUserName: string | null;
+  canEdit: boolean;
 }) {
   return (
     <div className="flex flex-col gap-1">
       <div className="flex items-center gap-2">
         <span className="text-xs text-gray-500 dark:text-gray-400 w-20">Owner:</span>
-        <InlineEditor
-          label="owner name"
-          value={initialUserName ?? ''}
-          onSave={(v) => updateParticipantUserName(participantId, v)}
-          className="text-base text-gray-700 dark:text-gray-300"
-        />
+        {canEdit ? (
+          <InlineEditor
+            label="owner name"
+            value={initialUserName ?? ''}
+            onSave={(v) => updateParticipantUserName(participantId, v)}
+            className="text-base text-gray-700 dark:text-gray-300"
+          />
+        ) : (
+          <span className="text-base text-gray-700 dark:text-gray-300">
+            {initialUserName || <span className="text-gray-400 italic">—</span>}
+          </span>
+        )}
       </div>
       <div className="flex items-center gap-2">
         <span className="text-xs text-gray-500 dark:text-gray-400 w-20">Entry:</span>
-        <InlineEditor
-          label="entry name"
-          value={initialName}
-          onSave={(v) => {
-            if (!v) return Promise.reject(new Error('Name cannot be empty'));
-            return updateParticipantName(participantId, v);
-          }}
-          className="text-2xl font-bold text-gray-900 dark:text-white"
-        />
+        {canEdit ? (
+          <InlineEditor
+            label="entry name"
+            value={initialName}
+            onSave={(v) => {
+              if (!v) return Promise.reject(new Error('Name cannot be empty'));
+              return updateParticipantName(participantId, v);
+            }}
+            className="text-2xl font-bold text-gray-900 dark:text-white"
+          />
+        ) : (
+          <span className="text-2xl font-bold text-gray-900 dark:text-white">{initialName}</span>
+        )}
       </div>
     </div>
   );
