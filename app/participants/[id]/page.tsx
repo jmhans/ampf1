@@ -8,7 +8,6 @@ import ParticipantNameEditor from './ParticipantNameEditor';
 import { auth0 } from '@/app/lib/auth0';
 import { isAdmin } from '@/app/lib/auth-utils';
 import RedrawButton from './RedrawButton';
-import { auth0 } from '@/app/lib/auth0';
 
 export const dynamic = 'force-dynamic';
 
