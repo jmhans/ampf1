@@ -4,6 +4,8 @@ import { db } from '@/app/lib/db';
 import { participants } from '@/app/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
+import { auth0 } from '@/app/lib/auth0';
+import { isAdmin } from '@/app/lib/auth-utils';
 
 export type Participant = typeof participants.$inferSelect;
 
@@ -43,7 +45,27 @@ export async function joinPool(formData: FormData, auth0Id: string, email: strin
   revalidatePath('/participants');
 }
 
+async function assertCanEditParticipant(participantId: number): Promise<void> {
+  const session = await auth0.getSession();
+  if (!session?.user) throw new Error('Authentication required');
+
+  if (isAdmin(session.user)) return;
+
+  const rows = await db
+    .select({ auth0Id: participants.auth0Id })
+    .from(participants)
+    .where(eq(participants.id, participantId))
+    .limit(1);
+
+  if (!rows[0]) throw new Error('Participant not found');
+  if (rows[0].auth0Id !== session.user.sub) {
+    throw new Error('Access denied: you can only edit your own entries');
+  }
+}
+
 export async function updateParticipantName(participantId: number, newName: string) {
+  await assertCanEditParticipant(participantId);
+
   const trimmed = newName.trim();
   if (!trimmed) throw new Error('Name cannot be empty');
 
@@ -57,6 +79,8 @@ export async function updateParticipantName(participantId: number, newName: stri
 }
 
 export async function updateParticipantUserName(participantId: number, newUserName: string) {
+  await assertCanEditParticipant(participantId);
+
   const trimmed = newUserName.trim();
 
   await db

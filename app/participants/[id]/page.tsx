@@ -5,6 +5,8 @@ import { participants, bingoEvents, entryCards, entryCardSquares, seasons } from
 import { eq, and, isNull, desc } from 'drizzle-orm';
 import BingoCard, { type CardSquare } from './BingoCard';
 import ParticipantNameEditor from './ParticipantNameEditor';
+import { auth0 } from '@/app/lib/auth0';
+import { isAdmin } from '@/app/lib/auth-utils';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,16 +19,21 @@ export default async function ParticipantCardPage({
   const participantId = parseInt(id, 10);
   if (isNaN(participantId)) notFound();
 
-  const [participantRows, activeSeason] = await Promise.all([
+  const [participantRows, activeSeason, session] = await Promise.all([
     db.select().from(participants).where(eq(participants.id, participantId)).limit(1),
     db.select().from(seasons)
       .where(eq(seasons.isActive, true))
       .orderBy(desc(seasons.id))
       .limit(1),
+    auth0.getSession(),
   ]);
 
   const participant = participantRows[0];
   if (!participant) notFound();
+
+  const canEdit =
+    !!session?.user &&
+    (isAdmin(session.user) || participant.auth0Id === session.user.sub);
 
   if (!activeSeason || activeSeason.length === 0) {
     return (
@@ -35,7 +42,7 @@ export default async function ParticipantCardPage({
           <Link href="/participants" className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100">
             ←
           </Link>
-          <ParticipantNameEditor participantId={participant.id} initialName={participant.name} initialUserName={participant.userName ?? null} />
+          <ParticipantNameEditor participantId={participant.id} initialName={participant.name} initialUserName={participant.userName ?? null} canEdit={canEdit} />
         </div>
         <p className="text-gray-600">No active season card generated yet.</p>
       </div>
@@ -62,7 +69,7 @@ export default async function ParticipantCardPage({
           <Link href="/participants" className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100">
             ←
           </Link>
-          <ParticipantNameEditor participantId={participant.id} initialName={participant.name} initialUserName={participant.userName ?? null} />
+          <ParticipantNameEditor participantId={participant.id} initialName={participant.name} initialUserName={participant.userName ?? null} canEdit={canEdit} />
         </div>
         <p className="text-gray-600">No bingo card generated yet. Go to Admin &gt; Generate Cards.</p>
       </div>
@@ -104,7 +111,7 @@ export default async function ParticipantCardPage({
           ←
         </Link>
         <div className="flex-1">
-          <ParticipantNameEditor participantId={participant.id} initialName={participant.name} initialUserName={participant.userName ?? null} />
+          <ParticipantNameEditor participantId={participant.id} initialName={participant.name} initialUserName={participant.userName ?? null} canEdit={canEdit} />
         </div>
       </div>
 
