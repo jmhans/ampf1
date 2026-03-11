@@ -1,6 +1,6 @@
 import { auth0 } from '@/app/lib/auth0';
 import Link from 'next/link';
-import { getAllParticipants, getParticipantByAuth0Id } from '@/app/lib/actions/participants';
+import { getAllParticipantsWithStats, getParticipantByAuth0Id } from '@/app/lib/actions/participants';
 import JoinPoolButton from './JoinPoolButton';
 
 export const dynamic = 'force-dynamic';
@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 export default async function ParticipantsPage() {
   const [session, allParticipants] = await Promise.all([
     auth0.getSession(),
-    getAllParticipants(),
+    getAllParticipantsWithStats(),
   ]);
 
   const user = session?.user ?? null;
@@ -67,6 +67,8 @@ export default async function ParticipantsPage() {
                 <th className="px-4 py-3">Owner</th>
                 <th className="px-4 py-3">Entry Name</th>
                 <th className="px-4 py-3">Joined</th>
+                <th className="px-4 py-3">Shout! Status</th>
+                <th className="px-4 py-3">Progress</th>
               </tr>
             </thead>
             <tbody>
@@ -94,6 +96,18 @@ export default async function ParticipantsPage() {
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-400">
                     {new Date(p.createdAt).toLocaleDateString()}
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-400">
+                    {p.shoutedAt ? (
+                      <span className="text-green-600 dark:text-green-400 font-medium">
+                        {new Date(p.shoutedAt).toLocaleString()}
+                      </span>
+                    ) : (
+                      <span className="text-gray-400">—</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">
+                    {p.achievedCount}/25
                   </td>
                 </tr>
               ))}
