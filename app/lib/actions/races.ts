@@ -11,7 +11,7 @@ export async function getAllRaces(): Promise<Race[]> {
   return db.select().from(races).orderBy(races.raceDate);
 }
 
-export async function updateRaceStatus(raceId: number, status: 'scheduled' | 'in_progress' | 'completed') {
+export async function updateRaceStatus(raceId: number, status: 'scheduled' | 'in_progress' | 'completed' | 'cancelled') {
   await db
     .update(races)
     .set({ status, updatedAt: new Date() })
