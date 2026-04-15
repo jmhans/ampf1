@@ -63,14 +63,20 @@ export default async function RacesPage() {
         {allRaces.map((race) => (
           <div
             key={race.id}
-            className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 hover:shadow-lg dark:hover:shadow-gray-900/50 transition-shadow"
+            className={`rounded-lg border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg dark:hover:shadow-gray-900/50 transition-shadow ${
+              race.status === 'cancelled'
+                ? 'bg-gray-50 dark:bg-gray-900 opacity-60'
+                : 'bg-white dark:bg-gray-800'
+            }`}
           >
             {/* Round and status */}
             <div className="flex items-start justify-between mb-3">
               <span className="inline-block px-2.5 py-0.5 rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-xs font-semibold">
                 Round {race.round}
               </span>
-              {new Date(race.raceDate || '') < new Date() ? (
+              {race.status === 'cancelled' ? (
+                <span className="text-xs font-semibold text-red-600 dark:text-red-400">Cancelled</span>
+              ) : race.status === 'completed' ? (
                 <span className="text-xs text-gray-500 dark:text-gray-400">Completed</span>
               ) : (
                 <span className="text-xs text-green-600 dark:text-green-400">Upcoming</span>
@@ -78,7 +84,7 @@ export default async function RacesPage() {
             </div>
 
             {/* Race name */}
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3 leading-tight">
+            <h3 className={`text-lg font-bold mb-3 leading-tight ${race.status === 'cancelled' ? 'line-through text-gray-500 dark:text-gray-400' : 'text-gray-900 dark:text-white'}`}>
               {race.name}
             </h3>
 

@@ -10,9 +10,9 @@ interface RacesClientProps {
 
 export default function RacesClient({ races }: RacesClientProps) {
   const [isPending, startTransition] = useTransition();
-  const [selectedRaces, setSelectedRaces] = useState<Map<number, 'scheduled' | 'in_progress' | 'completed'>>(new Map());
+  const [selectedRaces, setSelectedRaces] = useState<Map<number, 'scheduled' | 'in_progress' | 'completed' | 'cancelled'>>(new Map());
 
-  const handleStatusChange = (raceId: number, newStatus: 'scheduled' | 'in_progress' | 'completed') => {
+  const handleStatusChange = (raceId: number, newStatus: 'scheduled' | 'in_progress' | 'completed' | 'cancelled') => {
     setSelectedRaces((prev) => {
       const updated = new Map(prev);
       updated.set(raceId, newStatus);
@@ -74,7 +74,9 @@ export default function RacesClient({ races }: RacesClientProps) {
                           ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
                           : race.status === 'in_progress'
                             ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
-                            : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                            : race.status === 'cancelled'
+                              ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                              : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
                       }`}
                     >
                       {race.status || 'unknown'}
@@ -84,13 +86,14 @@ export default function RacesClient({ races }: RacesClientProps) {
                     <select
                       value={newStatus || race.status || ''}
                       onChange={(e) =>
-                        handleStatusChange(race.id, e.target.value as 'scheduled' | 'in_progress' | 'completed')
+                        handleStatusChange(race.id, e.target.value as 'scheduled' | 'in_progress' | 'completed' | 'cancelled')
                       }
                       className="rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-1 text-sm text-gray-900 dark:text-white"
                     >
                       <option value="scheduled">Scheduled</option>
                       <option value="in_progress">In Progress</option>
                       <option value="completed">Completed</option>
+                      <option value="cancelled">Cancelled</option>
                     </select>
                   </td>
                   <td className="px-6 py-4">
